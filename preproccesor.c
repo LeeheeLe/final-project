@@ -13,6 +13,14 @@ struct macro_table {
     struct macro_table *next_macro;
 };
 
+int def_start(char *line){
+  line = strdup(line);
+  strtok(line, " ");
+  return !strcmp(line,MACRO_START);
+}
+
+
+
 error_code preprocces(char *filename){
     int mcro_flag = 0;
     struct line file;
@@ -23,7 +31,7 @@ error_code preprocces(char *filename){
         replace_with_macro_content();
         continue;
     }
-    if (def_start()){
+    if (def_start(line)){
         insert_macro_name(line, &curr_macro);
         rmline();
         while(1){
