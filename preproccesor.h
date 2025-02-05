@@ -6,10 +6,13 @@
 #define PREPROCCESOR_H
 
 #define MACRO_START "mcro"
+#define MACRO_END "mcroend"
 
 
 #include "errors.h"
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 error_code preprocces(char*);
 
