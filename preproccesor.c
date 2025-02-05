@@ -63,16 +63,33 @@ void insert_macro_name(const char *line,struct macro_table *curr_macro, error_co
     *ecode = EXTRA_CHARS_MACRO;
 }
 
+int is_saved_macro(const char *line,const struct macro_table *head, error_code *ecode) {
+    int i, j, k=0;
+    struct macro_table curr = *head;
+    do {
+        for (i=0; isspace(*(line+i)) && i<strlen(line); i++){} /*ignore whitespace*/
+        for (j=0; *(line+i+j) == curr.macro_name[j] && i<strlen(line) && j<strlen(curr.macro_name);j++){}
+        for (i=i+j; isspace(*(line+i)) && i<strlen(line); i++){} /*ignore whitespace*/
+        if (i == strlen(line) - 1) {
+            return k;
+        }
+        k++;
+    } while (curr.next_macro != NULL);
+    return -1;
+}
 
 
 error_code preprocces(char *filename){
+    int macro_idx;
     error_code ecode = NORMAL;
     struct line file;
     struct line currline;
-    struct macro_table curr_macro;
+    struct macro_table curr_macro, *head_macro;
+    head_macro = &curr_macro;
+    /*TODO: start file read loop here*/
     char *line = read_line();
-    if (starts_with_macro()){
-        replace_with_macro_content();
+    if ((macro_idx = is_saved_macro(line,head_macro, &ecode)) != -1){
+        replace_with_macro_content(macro_idx, head_macro);
         continue;
     }
     if (mcrostart(line)){
@@ -90,6 +107,5 @@ error_code preprocces(char *filename){
     else {
         write_line(line);
     }
-
-
+    /*TODO: end file read loop here*/
 }
