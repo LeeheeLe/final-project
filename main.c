@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
     char *filename;
     for (i=1; i<argc; i++){
         filename = argv[i];
-        preprocces(filename);
+        preprocess(filename);
         firstpass(filename);
         secondpass(filename);
 

@@ -14,7 +14,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-error_code preprocces(char*);
+error_code preprocess(char*);
 
 
 #endif //PREPROCCESOR_H

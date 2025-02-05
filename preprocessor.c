@@ -79,7 +79,7 @@ int is_saved_macro(const char *line,const struct macro_table *head, error_code *
 }
 
 
-error_code preprocces(char *filename){
+error_code preprocess(char *filename){
     int macro_idx;
     error_code ecode = NORMAL;
     struct line file;
