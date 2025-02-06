@@ -5,9 +5,16 @@
 #ifndef PREPROCCESOR_H
 #define PREPROCCESOR_H
 
-#include "errors.h"
+#define MACRO_START "mcro"
+#define MACRO_END "mcroend"
 
-error_code preprocces(char*);
+
+#include "errors.h"
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+error_code preprocess(char*);
 
 
 #endif //PREPROCCESOR_H

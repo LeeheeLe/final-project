@@ -8,8 +8,8 @@ int main(int argc, char *argv[]){
     int i;
     char *filename;
     for (i=1; i<argc; i++){
-        filename = argv[i]
-        preprocces(filename);
+        filename = argv[i];
+        preprocess(filename);
         firstpass(filename);
         secondpass(filename);
 

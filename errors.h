@@ -6,7 +6,8 @@
 #define ERRORS_H
 
 enum errors {NORMAL,
-    EXTRA_CHARS_MACRO};
+    EXTRA_CHARS_MACRO,
+    MACRO_NAME_RESERVED};
 
 typedef enum errors error_code;
 
