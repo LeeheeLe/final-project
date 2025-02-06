@@ -1,8 +1,5 @@
-//
-// Created by itay on 1/31/25.
-//
-
 #include "preproccesor.h"
+#include <stdio.h>
 struct line{
     char* line;
     struct line *next_line;
@@ -12,6 +9,64 @@ struct macro_table {
     struct line *first_line;
     struct macro_table *next_macro;
 };
+/*TODO fix indentation and divide everything to smaller functions*/
+void preprocces(const char *input_file, const char *output_file){
+    int macro_idx;
+    error_code ecode = NORMAL;
+    struct line file;
+    struct line currline;
+    struct macro_table curr_macro, *head_macro;
+    head_macro = &curr_macro;
+
+  FILE *input = fopen(input_file, "r");/*open input file in 'read' mode*/
+    FILE *output = fopen(output_file, "w");/*open output file in 'write' mode*/
+    if (input == NULL || output == NULL){
+      printf("error: failed to open file\n");/*consider using 'perror'*/
+    }
+
+    char *line = NULL; /*pointer to a buffer for storing each line read from the file*/
+	size_t buffer_length = 0; /*track the buffer size*/
+    size_t number_of_read_chars; /*numbers of chars read*/
+
+
+     /*while getline succeeds to read dinamiclly a line from the file */
+     /*getline should work for c90, we need to see how to change our setting for c90*/
+   while ((number_of_read_chars = getline(&line, &buffer_length, input)) != -1) {
+    if ((macro_idx = is_saved_macro(line,head_macro, &ecode)) != -1){
+        replace_with_macro_content(macro_idx, head_macro); /*?*/
+        continue;
+
+    if (mcrostart(line)){
+        insert_macro_name(line, &curr_macro, &ecode);
+        while(1){
+            line = read_line();
+            if (!mcroend(line, &ecode)){
+                append_line_to_macro(line, &curr_macro);
+            }
+            else{
+                break;
+            }
+        }
+    }
+
+    else {
+        fputs(line, output);
+    }
+
+     /*IMPORTANT, please read:
+		* TODO: lets decide how to implement the file reading with error finding.
+*  we forgot that in addition to reading input file and finding errors, we also have to output a relevant file.
+ * I think we could make a wrapping function 'preprocces' that reads the input file and will write each valid row to the output file.
+* if errors are detected (using your error detection functions), an output file will not be outputed and we continue to preprocces the next input file.
+* let me know what do you think about this method */
+	}
+
+    free(line);
+    fclose(input);
+    fclose(output);
+    printf("\n");
+}
+
 
 int mcrostart(const char *line){
   int i, j;
@@ -76,36 +131,4 @@ int is_saved_macro(const char *line,const struct macro_table *head, error_code *
         k++;
     } while (curr.next_macro != NULL);
     return -1;
-}
-
-
-error_code preprocess(char *filename){
-    int macro_idx;
-    error_code ecode = NORMAL;
-    struct line file;
-    struct line currline;
-    struct macro_table curr_macro, *head_macro;
-    head_macro = &curr_macro;
-    /*TODO: start file read loop here*/
-    char *line = read_line();
-    if ((macro_idx = is_saved_macro(line,head_macro, &ecode)) != -1){
-        replace_with_macro_content(macro_idx, head_macro);
-        continue;
-    }
-    if (mcrostart(line)){
-        insert_macro_name(line, &curr_macro, &ecode);
-        while(1){
-            line = read_line();
-            if (!mcroend(line, &ecode)){
-                append_line_to_macro(line, &curr_macro);
-            }
-            else{
-                break;
-            }
-        }
-    }
-    else {
-        write_line(line);
-    }
-    /*TODO: end file read loop here*/
 }
