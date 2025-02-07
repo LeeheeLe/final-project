@@ -6,18 +6,18 @@ int main(int argc, char *argv[]) {
 
     if (argc < 2) {
         printf("error: missing argument\n");
-        /*TODO: make error enum for error id*/
         return 1;
     }
     int i;
     for (i = 1; i < argc; i++) {
-        size_t output_len = strlen(argv[i]) + strlen("_preprocessed.asm") + 1;
+        size_t output_len = strlen(argv[i]) + strlen(PREPROCESSED_EXT) + 1;
         char *output_file = (char *)malloc(output_len);
         if (output_file == NULL) {
-            perror("Memory allocation error");
+            MEM_ALOC_ERROR();
             return 1;
         }
-        snprintf(output_file, output_len, "%s_preprocessed.asm", argv[i]);
+        strcat(output_file, argv[i]);
+        strcat(output_file, PREPROCESSED_EXT);
         preprocces(argv[i], output_file);
         free(output_file);
     }
