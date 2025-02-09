@@ -8,6 +8,7 @@
 #define MACRO_END "mcroend"
 
 #define PREPROCESSED_EXT ".as"
+#define INPUT_EXT ".am"
 
 
 #include "errors.h"
@@ -26,12 +27,14 @@ struct macro_table {
     struct macro_table *next_macro;
 };
 
-void preprocces(const char *input_file, const char *output_file);
+void preprocess(const char *input_file, const char *output_file);
 int mcrostart(const char *line);
-int mcroend(const char *line, error_code *ecode, int line_number);
+int mcroend(const char *line, error_code *ecode, const int line_number);
 int isreserved(char *word);
 void insert_macro_name(const char *line,struct macro_table *curr_macro, error_code *ecode, int line_number);
 int is_saved_macro(const char *line, struct macro_table *head, error_code *ecode);
+void print_macro_contents_to_file(const int macro_idx,struct macro_table *head_macro, FILE *output);
+void append_line_to_macro(char *line,struct macro_table *curr_macro);
 
 
 #endif //PREPROCCESOR_H

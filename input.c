@@ -5,7 +5,7 @@
 #include "input.h"
 #include "errors.h"
 
-char *getLine(const char *file) {
+char *getLine(FILE *input) {
     int current_idx = 0;
     char c;
     int eof_flag = 0;
@@ -16,10 +16,6 @@ char *getLine(const char *file) {
     if (line == NULL) {
         MEM_ALOC_ERROR();
         return NULL;
-    }
-    FILE *input = fopen(file, "r"); /*open input file in 'read' mode*/
-    if (input == NULL) {
-        FILE_OPEN_ERROR();
     }
     while (1) {
         c = (char) fgetc(input);

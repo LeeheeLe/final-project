@@ -10,6 +10,6 @@
 #define STARTING_LINE_SIZE 64
 
 /*get line (arbitrary length) from file, returns a pointer to the start of the line*/
-char *getLine(const char *file);
+char *getLine(FILE *input);
 
 #endif
