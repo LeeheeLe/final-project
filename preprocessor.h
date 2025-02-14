@@ -1,4 +1,3 @@
-
 #ifndef PREPROCCESOR_H
 #define PREPROCCESOR_H
 #define MACRO_START "mcro"
