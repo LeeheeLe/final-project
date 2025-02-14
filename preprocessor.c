@@ -134,10 +134,11 @@ void insert_macro_name(const char *line, struct macro_table *curr_macro, error_c
         *(macro_name + j) = *(line + i);
         j++;
     }
-    // if (isreserved(macro_name)) {
-    //     MACRO_NAME_RESERVED(line_number);
-    // } TODO: reserved words implementation
-    for (; isspace(*(line + i)) && i < strlen(line); i++) {
+    if ( is_reserved_name(macro_name)) {
+      *ecode = MACRO_NAME_RESERVED(line_number);
+    }
+
+    for (i=0 ; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/
     if (i == strlen(line)) {
         curr_macro->macro_name = macro_name;
