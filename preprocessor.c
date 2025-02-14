@@ -2,7 +2,6 @@
 #include "input.h"
 #include "preprocessor.h"
 
-/*TODO fix leaks*/
 void preprocess(const char *input_file, const char *output_file) {
     int macro_idx, line_number = -1;
     error_code ecode = NORMAL;
@@ -26,11 +25,11 @@ void preprocess(const char *input_file, const char *output_file) {
             print_macro_contents_to_file(macro_idx, head_macro, output); /*?*/
             continue;
         }
-        if (mcrostart(line)) {
+        if (mcro_start(line)) {
             insert_macro_name(line, curr_macro, &ecode, line_number);
             while ((line = getLine(input)) != NULL) {
                 line_number++;
-                if (!mcroend(line, &ecode, line_number)) {
+                if (!mcro_end(line, &ecode, line_number)) {
                     append_line_to_macro(line, curr_macro);
                 } else {
                     break;
@@ -41,6 +40,13 @@ void preprocess(const char *input_file, const char *output_file) {
             fputc('\n', output);
         }
         free(line);
+    }
+    fclose(input);
+    fclose(output);
+    while (head_macro != NULL) {
+      struct macro_table *temp = head_macro;
+      head_macro = head_macro->next_macro;
+      free(temp);
     }
 }
 
@@ -57,7 +63,6 @@ void append_line_to_macro(char *line,struct macro_table *curr_macro) {
     curr_line->line = line;
 }
 
-
 void print_macro_contents_to_file(const int macro_idx,struct macro_table *head_macro, FILE *output) {
     int idx;
     struct macro_table curr_macro = *head_macro;
@@ -73,9 +78,7 @@ void print_macro_contents_to_file(const int macro_idx,struct macro_table *head_m
     }
 }
 
-
-
-int mcrostart(const char *line) {
+int mcro_start(const char *line) {
     int i, j;
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
     }
@@ -87,7 +90,7 @@ int mcrostart(const char *line) {
     return 0;
 }
 
-int mcroend(const char *line, error_code *ecode, const int line_number) {
+int mcro_end(const char *line, error_code *ecode, const int line_number) {
     int i, j;
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
     }
@@ -137,7 +140,6 @@ void insert_macro_name(const char *line, struct macro_table *curr_macro, error_c
     if ( is_reserved_name(macro_name)) {
       *ecode = MACRO_NAME_RESERVED(line_number);
     }
-
     for (i=0 ; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/
     if (i == strlen(line)) {

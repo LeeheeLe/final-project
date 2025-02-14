@@ -24,7 +24,7 @@ struct macro_table {
 void preprocess(const char *input_file, const char *output_file);
 int mcro_start(const char *line);
 int mcro_end(const char *line, error_code *ecode, const int line_number);
-int is_reserved(char *word);
+int is_reserved_name(char *mcro_name);
 void insert_macro_name(const char *line,struct macro_table *curr_macro, error_code *ecode, int line_number);
 int is_saved_macro(const char *line, struct macro_table *head, error_code *ecode);
 void print_macro_contents_to_file(const int macro_idx,struct macro_table *head_macro, FILE *output);
