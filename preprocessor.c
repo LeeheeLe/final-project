@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "input.h"
-#include "preproccesor.h"
+#include "preprocessor.h"
 
 /*TODO fix leaks*/
 void preprocess(const char *input_file, const char *output_file) {
