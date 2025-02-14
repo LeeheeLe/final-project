@@ -2,7 +2,6 @@
 #include "input.h"
 #include "preproccesor.h"
 
-
 /*TODO fix leaks*/
 void preprocess(const char *input_file, const char *output_file) {
     int macro_idx, line_number = -1;

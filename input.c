@@ -1,7 +1,3 @@
-/*
- * Created by itay on 12/31/24.
- */
-
 #include "input.h"
 #include "errors.h"
 
