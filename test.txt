@@ -1,9 +1,0 @@
-c_a mcro
- inc r2
- mov A,r1
-mcroend
-
-a_mc
-
-a_mc
-a_mc
