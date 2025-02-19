@@ -109,14 +109,14 @@ int mcro_end(const char *line, error_code *ecode, const int line_number) {
     return 0;
 }
 
-char reserved_names[28] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+char *reserved_names[28] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
     "jsr", "red", "prn", "rts", "stop", ".data", ".string",".entry", ".extern"};
 
 int is_reserved_name(char *mcro_name){
     int i;
     for(i = 0 ; i < sizeof(reserved_names)/sizeof(reserved_names[0]) ; i++){
-        if(strcmp(&reserved_names[i],mcro_name) == 0){
+        if(strcmp(reserved_names[i],mcro_name) == 0){
         /*name is already reserved*/
         return 1;
         }
@@ -140,7 +140,7 @@ void insert_macro_name(const char *line, struct macro_table *curr_macro, error_c
     if ( is_reserved_name(macro_name)) {
       *ecode = MACRO_NAME_RESERVED(line_number);
     }
-    for (i=0 ; isspace(*(line + i)) && i < strlen(line); i++) {
+    for (; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/
     if (i == strlen(line)) {
         curr_macro->macro_name = macro_name;
