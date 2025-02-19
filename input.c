@@ -5,7 +5,6 @@
 char *getLine(FILE *input) {
     int current_idx = 0;
     char c;
-    int eof_flag = 0;
     int line_size = STARTING_LINE_SIZE;
     char *line;
     char *new_line;
@@ -19,7 +18,6 @@ char *getLine(FILE *input) {
 
         /*check for error  or End Of File*/
         if (c == EOF) {
-            eof_flag = 1;
             if (current_idx == 0) {
                 free(line);
                 return NULL;
@@ -46,8 +44,5 @@ char *getLine(FILE *input) {
         }
     }
     line[current_idx] = '\0';
-    if (eof_flag) {
-        line[current_idx] = EOF;
-    }
     return line;
 }
