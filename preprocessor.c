@@ -2,7 +2,7 @@
 #include "input.h"
 #include "preprocessor.h"
 
-void preprocess(const char *input_file, const char *output_file) {
+struct macro_table *preprocess(const char *input_file, const char *output_file) {
     int macro_idx, line_number = -1;
     error_code ecode = NORMAL;
     struct macro_table *curr_macro, *head_macro;
@@ -10,12 +10,13 @@ void preprocess(const char *input_file, const char *output_file) {
     curr_macro = head_macro;
     if (curr_macro == NULL) {
         MEM_ALOC_ERROR();
-        return ;
+        return NULL;
     }
     FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
     FILE *output = fopen(output_file, "w"); /*open output file in 'write' mode*/
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
+        return NULL;
     }
     char *line = NULL; /*pointer to a buffer for storing each line read from the file*/
     while ((line = getLine(input)) != NULL) {
@@ -43,11 +44,7 @@ void preprocess(const char *input_file, const char *output_file) {
     }
     fclose(input);
     fclose(output);
-    while (head_macro != NULL) {
-      struct macro_table *temp = head_macro;
-      head_macro = head_macro->next_macro;
-      free(temp);
-    }
+    return head_macro;
 }
 
 void append_line_to_macro(char *line,struct macro_table *curr_macro) {

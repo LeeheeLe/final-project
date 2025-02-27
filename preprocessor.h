@@ -21,7 +21,7 @@ struct macro_table {
     struct macro_table *next_macro;
 };
 
-void preprocess(const char *input_file, const char *output_file);
+struct macro_table *preprocess(const char *input_file, const char *output_file);
 int mcro_start(const char *line);
 int mcro_end(const char *line, error_code *ecode, const int line_number);
 int is_reserved_name(char *mcro_name);
