@@ -10,6 +10,7 @@ int main(const int argc, char *argv[]) {
     }
     int i;
     for (i = 1; i < argc; i++) {
+        //TODO:organize this code
         size_t output_len = strlen(argv[i]) + strlen(PREPROCESSED_EXT) + 1;
         char *input_file = (char *)malloc(output_len);
         char *output_file = (char *)malloc(output_len);
@@ -24,6 +25,8 @@ int main(const int argc, char *argv[]) {
         preprocess(input_file, output_file);
         free(input_file);
         free(output_file);
+
+
     }
     return 0;
 }
