@@ -1,14 +1,10 @@
-/*
- * Created by itay on 12/31/24.
- */
-
 #include "input.h"
 #include "errors.h"
 
+/*TODO: write detailed documantation (like in mamans: after every var, before functions, in the head of source files.) Lets do this after our tests*/
 char *getLine(FILE *input) {
     int current_idx = 0;
     char c;
-    int eof_flag = 0;
     int line_size = STARTING_LINE_SIZE;
     char *line;
     char *new_line;
@@ -22,7 +18,6 @@ char *getLine(FILE *input) {
 
         /*check for error  or End Of File*/
         if (c == EOF) {
-            eof_flag = 1;
             if (current_idx == 0) {
                 free(line);
                 return NULL;
@@ -49,9 +44,5 @@ char *getLine(FILE *input) {
         }
     }
     line[current_idx] = '\0';
-    if (eof_flag) {
-        line[current_idx] = EOF;
-    }
-
     return line;
 }
