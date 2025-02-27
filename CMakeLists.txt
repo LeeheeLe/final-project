@@ -11,4 +11,6 @@ add_executable(final_project
         input.h
         main.c
         preprocessor.c
-        preprocessor.h)
+        preprocessor.h
+        first_pass.c
+        first_pass.h)
