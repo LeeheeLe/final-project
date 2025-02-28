@@ -2,18 +2,31 @@
 #include "input.h"
 #include "preprocessor.h"
 
-struct macro_table *preprocess(const char *input_file, const char *output_file) {
+struct macro_table *preprocess(const char *file_name) {
     int macro_idx, line_number = -1;
     error_code ecode = NORMAL;
     struct macro_table *curr_macro, *head_macro;
     head_macro = malloc(sizeof(struct  macro_table));
+    char *input_file, *output_file;
     curr_macro = head_macro;
     if (curr_macro == NULL) {
         MEM_ALOC_ERROR();
         return NULL;
     }
+    input_file = malloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
+    output_file = malloc(strlen(file_name) + strlen(OUTPUT_EXT) + 1);
+    if (input_file == NULL || output_file == NULL) {
+        MEM_ALOC_ERROR();
+        return NULL;
+    }
+    input_file = strcpy(input_file, file_name);
+    output_file = strcpy(output_file, file_name);
+    strcat(input_file, INPUT_EXT);
+    strcat(output_file, OUTPUT_EXT);
     FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
     FILE *output = fopen(output_file, "w"); /*open output file in 'write' mode*/
+    free(input_file);
+    free(output_file);
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
         return NULL;

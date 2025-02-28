@@ -3,13 +3,16 @@
 #define MACRO_START "mcro"
 #define MACRO_END "mcroend"
 
-#define PREPROCESSED_EXT ".as"
-#define INPUT_EXT ".am"
 
+#include "file_extensions.h"
 #include "errors.h"
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+
+#define INPUT_EXT PREPROCESSOR_INPUT_EXT
+#define OUTPUT_EXT PREPROCESSOR_OUTPUT_EXT
 
 struct line{
     char* line;
@@ -21,7 +24,7 @@ struct macro_table {
     struct macro_table *next_macro;
 };
 
-struct macro_table *preprocess(const char *input_file, const char *output_file);
+struct macro_table *preprocess(const char *file_name);
 int mcro_start(const char *line);
 int mcro_end(const char *line, error_code *ecode, const int line_number);
 int is_reserved_name(char *mcro_name);
