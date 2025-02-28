@@ -14,4 +14,8 @@ add_executable(final_project
         preprocessor.h
         first_pass.c
         first_pass.h
-        file_extensions.h)
+        file_extensions.h
+        label_table.c
+        label_table.h
+        parsing.c
+        parsing.h)
