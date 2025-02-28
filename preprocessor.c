@@ -13,6 +13,9 @@ struct macro_table *preprocess(const char *file_name) {
         MEM_ALOC_ERROR();
         return NULL;
     }
+    head_macro->first_line=NULL;
+    head_macro->macro_name=NULL;
+    head_macro->next_macro=NULL;
     input_file = malloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
     output_file = malloc(strlen(file_name) + strlen(OUTPUT_EXT) + 1);
     if (input_file == NULL || output_file == NULL) {
@@ -63,6 +66,8 @@ struct macro_table *preprocess(const char *file_name) {
 void append_line_to_macro(char *line,struct macro_table *curr_macro) {
     if (curr_macro->first_line == NULL) {
         curr_macro->first_line = malloc(sizeof(struct line));
+        curr_macro->first_line->line = NULL;
+        curr_macro->first_line->next_line = NULL;
         if (curr_macro->first_line == NULL) MEM_ALOC_ERROR();
     }
     struct line *curr_line = curr_macro->first_line;
@@ -70,6 +75,8 @@ void append_line_to_macro(char *line,struct macro_table *curr_macro) {
         curr_line = curr_line->next_line;
     }
     curr_line->next_line = malloc(sizeof(struct line));
+    curr_line->next_line->line = NULL;
+    curr_line->next_line->next_line = NULL;
     curr_line->line = line;
 }
 

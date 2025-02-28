@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+instruction instructions[] = {
+  {DATA, "data"},
+  {STRING, "string"},
+  {ENTRY, "entry"},
+  {EXTERN, "extern"}
+};
+
 int is_instruction(char **line, inst *instruction_type, int line_number) {
   char *work_line = *line;
   int i;
@@ -57,7 +64,7 @@ int is_label(char **line, char **label_name) {
     work_name++;
     label_length++;
   } /*checks that first character is a letter*/
-  for (;!isspace(*work_line) && isalnum(*work_line); work_line++) {
+  for (;!isspace(*work_line) && (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR); work_line++) {
     if (*work_line == LABEL_DEF_CHAR) {
       *work_name = '\0';
       *label_name = name;

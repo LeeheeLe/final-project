@@ -16,12 +16,7 @@ typedef struct {
   char *name;
 } instruction;
 
-instruction instructions[] = {
-  {DATA, "data"},
-  {STRING, "string"},
-  {ENTRY, "entry"},
-  {EXTERN, "extern"}
-};
+ extern instruction instructions[];
 #define NUMBER_OF_INSTRUCTION_TYPES 4
 
 

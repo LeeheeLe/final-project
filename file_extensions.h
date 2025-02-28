@@ -7,4 +7,4 @@
 #define PREPROCESSOR_OUTPUT_EXT ".as"
 
 
-#endif */FILE_EXTENSIONS_H*/
+#endif /*FILE_EXTENSIONS_H*/

@@ -10,14 +10,14 @@ int is_linking_instruction(inst instruction_type) {
 void first_pass(const char *file_name) {
   int IC = 100, DC = 100;
   char *input_file;
-  input_file = malloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
+  input_file = malloc(strlen(file_name) + strlen(ASSEMBLER_INPUT_EXT) + 1);
   if (input_file == NULL) {
     MEM_ALOC_ERROR();
     free(input_file);
     return;
   }
   input_file = strcpy(input_file, file_name);
-  strcat(input_file, INPUT_EXT);
+  strcat(input_file, ASSEMBLER_INPUT_EXT);
   FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
   free(input_file);
   if (input == NULL) {
@@ -36,7 +36,7 @@ void first_pass(const char *file_name) {
     if (is_label(&work_line, &label_name)) {
       label_flag = 1;/*todo: check existing labels*/
     }
-    if (is_instruction(&work_line, &instruction_type, line_number)) {
+    /*if (is_instruction(&work_line, &instruction_type, line_number)) {
       if (instruction_type == INVALID) {
         continue;
       }
@@ -54,11 +54,11 @@ void first_pass(const char *file_name) {
         }
       }
       continue;
-    }
+    }*/
     /*the line is an operation line, work_line is pointing to the start of the operation or to a whitespace before it*/
-    if (label_flag) {
+    /*if (label_flag) {
       insert_label(); // todo: figure out correct params
-    }
+    }*/
     free(line);
   }
 }
