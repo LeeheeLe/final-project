@@ -33,6 +33,7 @@ instruction instructions[] = {
 
 #define LABEL_DEF_CHAR ':'
 #define INSTRUCTION_START_CHAR '.'
+
 #define INPUT_EXT PREPROCESSOR_OUTPUT_EXT
 /*the input of the first pass is the output of the preprocessor*/
 

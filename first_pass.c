@@ -108,26 +108,28 @@ int is_comment(const char *line) {
 
 int is_label(char **line, char **label_name) {
   int label_length = 0;
-  char *name = malloc(32 * sizeof(char)), *work_line = *line;
+  char *work_name = malloc(32 * sizeof(char)), *work_line = *line;
+  char *name = work_name;
   while (isspace(*work_line)) {
     work_line++;
   }
   if (isalpha(*work_line)) {
-    *name = *work_line;
+    *work_name = *work_line;
     work_line++;
-    name++;
+    work_name++;
     label_length++;
   } /*checks that first character is a letter*/
-  for (; !isspace(*work_line); work_line++) {
+  for (; !isspace(*work_line) && isalnum(*work_line); work_line++) {
     if (*work_line == LABEL_DEF_CHAR) {
-      *name = '\0';
-      *label_name = name - label_length;
+      *work_name = '\0';
+      *label_name = name;
       *line = ++work_line;
       return 1;
     }
-    *name = *work_line;
-    name++;
+    *work_name = *work_line;
+    work_name++;
     label_length++;
   }
+  free(name);
   return 0;
 }
