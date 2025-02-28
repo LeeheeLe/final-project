@@ -13,5 +13,4 @@ add_executable(final_project
         preprocessor.c
         preprocessor.h
         first_pass.c
-        first_pass.h
-        file_extensions.h)
+        first_pass.h)
