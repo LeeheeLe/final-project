@@ -1,0 +1,10 @@
+
+
+#ifndef FILE_EXTENSIONS_H
+#define FILE_EXTENSIONS_H
+
+#define PREPROCESSOR_INPUT_EXT ".am"
+#define PREPROCESSOR_OUTPUT_EXT ".as"
+
+
+#endif /*FILE_EXTENSIONS_H*/

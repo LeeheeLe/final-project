@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "preprocessor.h"
+#include "first_pass.h"
 #include <stdlib.h>
 
 int main(const int argc, char *argv[]) {
@@ -10,23 +11,8 @@ int main(const int argc, char *argv[]) {
     }
     int i;
     for (i = 1; i < argc; i++) {
-        //TODO:organize this code
-        size_t output_len = strlen(argv[i]) + strlen(PREPROCESSED_EXT) + 1;
-        char *input_file = (char *)malloc(output_len);
-        char *output_file = (char *)malloc(output_len);
-        if (output_file == NULL || input_file == NULL) {
-            MEM_ALOC_ERROR();
-            return 1;
-        }
-        strcat(output_file, argv[i]);
-        strcat(output_file, PREPROCESSED_EXT);
-        strcat(input_file, argv[i]);
-        strcat(input_file, INPUT_EXT);
-        preprocess(input_file, output_file);
-        free(input_file);
-        free(output_file);
-
-
+        preprocess(argv[i]);
+        first_pass(argv[i]);
     }
     return 0;
 }
