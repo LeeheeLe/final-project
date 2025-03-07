@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef enum {
-  DATA, CODE
+  DATA, CODE, EXTERNAL
 } label_data_type;
 
 typedef enum {

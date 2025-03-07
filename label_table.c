@@ -40,6 +40,7 @@ void add_label(table_head *head, const char *name, int value,
   node->right = NULL;
   if (head->root == NULL) {
     head->root = node;
+    return;
   }
   add_node(node, head->root);
 }
