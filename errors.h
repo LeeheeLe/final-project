@@ -13,6 +13,7 @@
 #define INVALID_INSTRUCTION(line) printf("Error in line %d: invalid instruction name.\n", line)
 #define CONFLICTING_LABELS(line, label_name) printf("Error in line %d: label %s already exists.\n", line, label_name)
 #define MISSING_INSTRUCTION_PARAM(line) printf("Error in line %d: missing instruction parameter.\n", line)
+#define MISSING_STRING_INDICATOR(line) printf("Error in line %d: missing string.\n", line)
 #define EXTRA_CHARS_STRING_ERROR(line) printf("Error in line %d: extra chars after string instruction \n", line)
 #define EXTRA_CHARS_EXTERN_ERROR(line) printf("Error in line %d: extra chars after extern instruction \n", line)
 #define LABEL_TOO_LONG(line) printf("Error in line %d: label too long.\n", line)
