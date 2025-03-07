@@ -1,3 +1,4 @@
 test.as
 cmake-build-debug
 .idea
+.clang-tidy
