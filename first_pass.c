@@ -8,8 +8,65 @@ int is_data_instruction(inst instruction_type) {
 int is_linking_instruction(inst instruction_type) {
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
+char *parse_string(char *line, int line_number, enum errors *status) {
+  char *work_line = line;
+  while (isspace(*work_line)) {
+    work_line++;
+  }
+  if (*work_line == '\0') {
+    MISSING_INSTRUCTION_PARAM(line_number);
+    *status = ERROR;
+    return NULL;
+  }
+  if (*work_line == STR_INDICATOR) {
+    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    orig_str = str;
+    work_line++;
+    while (*work_line != '\0') {
+      if (*work_line != STR_INDICATOR) {
+        *str++ = *work_line++;
+      } else {
+        work_line++;
+        break;
+      }
+    }
+    if (*work_line == '\0' || is_whitespace(*work_line)) {
+      *str = '\0';
+      return orig_str;
+    }
+    EXTRA_CHARS_STRING_ERROR(line_number);
+    return NULL;
+  }
+}
+char *parse_extern(char *line, int line_number, enum errors *status) {
+  char *work_line = line;
+  while (isspace(*work_line)) {
+    work_line++;
+  }
+  if (*work_line == '\0') {
+    MISSING_INSTRUCTION_PARAM(line_number);
+    *status = ERROR;
+    return NULL;
+  }
+  if (isalpha(*work_line)) {
+    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    orig_str = str;
+    for (;*work_line != '\0' && !isspace(*work_line) && isalnum(*work_line); work_line++) {
+        *str++ = *work_line;
+    }
+    if (*work_line == '\0' || is_whitespace(work_line)) {
+      *str = '\0';
+      if (strlen(orig_str) > 31) {
+        LABEL_TOO_LONG(line_number);
+      }
+      return orig_str;
+    }
+    EXTRA_CHARS_EXTERN_ERROR(line_number);
+    return NULL;
+  }
+}
 void first_pass(const char *file_name) {
-  int IC = 100, DC = 100;
+  int IC = 100, DC = 0;
   char *input_file;
   enum errors status = NORMAL;
   table_head *table = initialise_table();
@@ -30,14 +87,15 @@ void first_pass(const char *file_name) {
   char *line, *work_line, *label_name;
   inst instruction_type;
   int line_number = 0;
-  int label_flag = 0;
+  int label_flag;
   while ((work_line = line = getLine(input)) != NULL) {
+    label_flag = 0;
     line_number++;
     if (is_whitespace(line) || is_comment(line)) {
       continue;
     }
     if (is_label(&work_line, &label_name)) {
-      label_flag = 1;/*todo: check existing labels*/
+      label_flag = 1;
       if (find_label(label_name, *table)!=NULL) {
         CONFLICTING_LABELS(line_number, label_name);
         status = ERROR;
@@ -51,21 +109,29 @@ void first_pass(const char *file_name) {
         if (label_flag) {
           add_label(table, label_name, DC, DATA, DEFAULT);
         }
-        // todo: find data type, encode it and increase DC accordingly
+        if (instruction_type == DATA_INST) {
+          // todo: parse data instruction, write to memory and increase DC accordingly
+        } else if (instruction_type == STRING_INST) {
+          char *str = parse_string(work_line, line_number, &status);
+          DC += (int) strlen(str)+1;
+          // todo: write str to memory
+          free(str);
+        }
       } else if (is_linking_instruction(instruction_type)) {
         if (label_flag) {
           LABELED_LINKING_WARNING(line_number);
         }
-        if (instruction_type == EXTERN) {
-          // todo: parse extern instruction to find label name
+        if (instruction_type == EXTERN_INST) {
+          label_name = parse_extern(work_line, line_number, &status);
+          add_label(table, label_name, DEFAULT_EXTERN_VALUE, EXTERNAL, EXTERN);
         }
       }
       continue;
     }
     /*the line is an operation line, work_line is pointing to the start of the operation or to a whitespace before it*/
-    /*if (label_flag) {
-      insert_label(); // todo: figure out correct params
-    }*/
+    if (label_flag) {
+      add_label(table, label_name, IC, CODE, DEFAULT);
+    }
     free(line);
   }
 }
