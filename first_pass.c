@@ -11,6 +11,8 @@ int is_linking_instruction(inst instruction_type) {
 void first_pass(const char *file_name) {
   int IC = 100, DC = 100;
   char *input_file;
+  enum errors status = NORMAL;
+  table_head *table = initialise_table();
   input_file = malloc(strlen(file_name) + strlen(ASSEMBLER_INPUT_EXT) + 1);
   if (input_file == NULL) {
     MEM_ALOC_ERROR();
@@ -36,14 +38,18 @@ void first_pass(const char *file_name) {
     }
     if (is_label(&work_line, &label_name)) {
       label_flag = 1;/*todo: check existing labels*/
+      if (find_label(label_name, *table)!=NULL) {
+        CONFLICTING_LABELS(line_number, label_name);
+        status = ERROR;
+      }
     }
-    /*if (is_instruction(&work_line, &instruction_type, line_number)) {
-      if (instruction_type == INVALID) {
+    if (is_instruction(&work_line, &instruction_type, line_number)) {
+      if (instruction_type == INVALID_INST) {
         continue;
       }
       if (is_data_instruction(instruction_type)) {
         if (label_flag) {
-          insert_label(); // todo: figure out what are the correct params here
+          add_label(table, label_name, DC, DATA, DEFAULT);
         }
         // todo: find data type, encode it and increase DC accordingly
       } else if (is_linking_instruction(instruction_type)) {
@@ -51,11 +57,11 @@ void first_pass(const char *file_name) {
           LABELED_LINKING_WARNING(line_number);
         }
         if (instruction_type == EXTERN) {
-          insert_label(); // todo: figure out correct params here
+          // todo: parse extern instruction to find label name
         }
       }
       continue;
-    }*/
+    }
     /*the line is an operation line, work_line is pointing to the start of the operation or to a whitespace before it*/
     /*if (label_flag) {
       insert_label(); // todo: figure out correct params
