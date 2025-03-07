@@ -8,6 +8,25 @@ int is_data_instruction(inst instruction_type) {
 int is_linking_instruction(inst instruction_type) {
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
+
+int parse_data(char *line, int line_number, enum errors *status) {
+  int i;
+  char *work_line = malloc(strlen(line) + 1);
+  strcpy(work_line, line);
+  for (i=0; *work_line  != '\0'; i++) {
+    while (isspace(*work_line)) {
+      work_line++;
+    }
+    if (*work_line == '\0') {
+      break;
+    }
+    //todo: parse the nums, write them to memory and check for errors
+  }
+
+  free(work_line);
+}
+
+
 char *parse_string(char *line, int line_number, enum errors *status) {
   char *work_line = line;
   while (isspace(*work_line)) {
@@ -37,6 +56,8 @@ char *parse_string(char *line, int line_number, enum errors *status) {
     EXTRA_CHARS_STRING_ERROR(line_number);
     return NULL;
   }
+  MISSING_STRING_INDICATOR(line_number);
+  return NULL;
 }
 char *parse_extern(char *line, int line_number, enum errors *status) {
   char *work_line = line;
@@ -110,6 +131,7 @@ void first_pass(const char *file_name) {
           add_label(table, label_name, DC, DATA, DEFAULT);
         }
         if (instruction_type == DATA_INST) {
+          int num_count = parse_data(work_line, line_number, &status);
           // todo: parse data instruction, write to memory and increase DC accordingly
         } else if (instruction_type == STRING_INST) {
           char *str = parse_string(work_line, line_number, &status);
@@ -132,6 +154,7 @@ void first_pass(const char *file_name) {
     if (label_flag) {
       add_label(table, label_name, IC, CODE, DEFAULT);
     }
+    // todo: calculate binary code of operation and encode it
     free(line);
   }
 }
