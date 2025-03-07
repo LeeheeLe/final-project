@@ -6,10 +6,10 @@
 #include <string.h>
 
 instruction instructions[] = {
-  {DATA, "data"},
-  {STRING, "string"},
-  {ENTRY, "entry"},
-  {EXTERN, "extern"}
+  {DATA_INST, "data"},
+  {STRING_INST, "string"},
+  {ENTRY_INST, "entry"},
+  {EXTERN_INST, "extern"}
 };
 
 int is_instruction(char **line, inst *instruction_type, int line_number) {
@@ -27,7 +27,7 @@ int is_instruction(char **line, inst *instruction_type, int line_number) {
       }
     }
     INVALID_INSTRUCTION(line_number);
-    *instruction_type = INVALID;
+    *instruction_type = INVALID_INST;
     return 1;
   }
   return 0;

@@ -29,7 +29,8 @@ void add_node(label *node, label *curr) {
   }
 }
 
-void add_label(table_head *head,const char *name, const int value, const label_data_type type, const linking_type linking_type) {
+void add_label(table_head *head, const char *name, int value,
+               label_data_type type, linking_type linking_type) {
   label *node = malloc(sizeof(label));
   node->name = name;
   node->value = value;

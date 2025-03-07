@@ -1,11 +1,12 @@
 #include "first_pass.h"
 #include "parsing.h"
+#include "label_table.h"
 
 int is_data_instruction(inst instruction_type) {
-  return instruction_type == DATA || instruction_type == STRING;
+  return instruction_type == DATA_INST || instruction_type == STRING_INST;
 }
 int is_linking_instruction(inst instruction_type) {
-  return instruction_type == EXTERN || instruction_type == ENTRY;
+  return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
 void first_pass(const char *file_name) {
   int IC = 100, DC = 100;
