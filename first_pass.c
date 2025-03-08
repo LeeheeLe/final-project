@@ -10,22 +10,30 @@ int is_linking_instruction(inst instruction_type) {
 }
 
 int parse_data(char *line, int line_number, enum errors *status) {
-  int i;
-  char *work_line = malloc(strlen(line) + 1);
-  strcpy(work_line, line);
-  for (i=0; *work_line  != '\0'; i++) {
+  int i, num;
+  char *end_ptr, *work_line = line;
+  for (i = 1; *work_line != '\0'; i++) {
+    num = strtol(work_line, &end_ptr, 10);
+    if (end_ptr == work_line) {
+      MISSING_NUMBER_OR_EXTAR_COMMA(line);
+    } else {
+      work_line = end_ptr;
+    }
     while (isspace(*work_line)) {
       work_line++;
     }
-    if (*work_line == '\0') {
-      break;
+    if (*work_line == ',') {
+      work_line++;
+    } else if (*work_line == '\0' || is_whitespace(work_line)) {
+      return i;
+    } else {
+      MISSING_COMMA(line_number);
+      *status = ERROR;
+      return 0;
     }
-    //todo: parse the nums, write them to memory and check for errors
+    // todo: write to memory and check for errors
   }
-
-  free(work_line);
 }
-
 
 char *parse_string(char *line, int line_number, enum errors *status) {
   char *work_line = line;
@@ -49,7 +57,7 @@ char *parse_string(char *line, int line_number, enum errors *status) {
         break;
       }
     }
-    if (*work_line == '\0' || is_whitespace(*work_line)) {
+    if (*work_line == '\0' || is_whitespace(work_line)) {
       *str = '\0';
       return orig_str;
     }
@@ -72,8 +80,9 @@ char *parse_extern(char *line, int line_number, enum errors *status) {
   if (isalpha(*work_line)) {
     char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
     orig_str = str;
-    for (;*work_line != '\0' && !isspace(*work_line) && isalnum(*work_line); work_line++) {
-        *str++ = *work_line;
+    for (; *work_line != '\0' && !isspace(*work_line) && isalnum(*work_line);
+         work_line++) {
+      *str++ = *work_line;
     }
     if (*work_line == '\0' || is_whitespace(work_line)) {
       *str = '\0';
@@ -117,7 +126,7 @@ void first_pass(const char *file_name) {
     }
     if (is_label(&work_line, &label_name)) {
       label_flag = 1;
-      if (find_label(label_name, *table)!=NULL) {
+      if (find_label(label_name, *table) != NULL) {
         CONFLICTING_LABELS(line_number, label_name);
         status = ERROR;
       }
@@ -132,10 +141,10 @@ void first_pass(const char *file_name) {
         }
         if (instruction_type == DATA_INST) {
           int num_count = parse_data(work_line, line_number, &status);
-          // todo: parse data instruction, write to memory and increase DC accordingly
+          DC += num_count;
         } else if (instruction_type == STRING_INST) {
           char *str = parse_string(work_line, line_number, &status);
-          DC += (int) strlen(str)+1;
+          DC += (int)strlen(str) + 1;
           // todo: write str to memory
           free(str);
         }
@@ -150,7 +159,8 @@ void first_pass(const char *file_name) {
       }
       continue;
     }
-    /*the line is an operation line, work_line is pointing to the start of the operation or to a whitespace before it*/
+    /*the line is an operation line, work_line is pointing to the start of the
+     * operation or to a whitespace before it*/
     if (label_flag) {
       add_label(table, label_name, IC, CODE, DEFAULT);
     }
@@ -158,4 +168,3 @@ void first_pass(const char *file_name) {
     free(line);
   }
 }
-
