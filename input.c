@@ -1,7 +1,7 @@
 #include "input.h"
 #include "errors.h"
 
-/*TODO: write detailed documantation (like in mamans: after every var, before functions, in the head of source files.) Lets do this after our tests*/
+/*TODO: write detailed documentation (like in mamans: after every var, before functions, in the head of source files.) Lets do this after our tests*/
 char *getLine(FILE *input) {
     int current_idx = 0;
     char c;

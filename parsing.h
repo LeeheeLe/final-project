@@ -4,11 +4,11 @@
 #define PARSING_H
 
 typedef enum {
-  DATA,
-  STRING,
-  ENTRY,
-  EXTERN,
-  INVALID
+  DATA_INST,
+  STRING_INST,
+  ENTRY_INST,
+  EXTERN_INST,
+  INVALID_INST
 } inst;
 
 typedef struct {

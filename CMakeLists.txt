@@ -18,4 +18,6 @@ add_executable(final_project
         label_table.c
         label_table.h
         parsing.c
-        parsing.h)
+        parsing.h
+        mem_image.c
+        mem_image.h)

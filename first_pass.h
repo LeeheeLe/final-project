@@ -14,6 +14,10 @@
 #define ASSEMBLER_INPUT_EXT PREPROCESSOR_OUTPUT_EXT
 /*the input of the first pass is the output of the preprocessor*/
 
+#define STR_INDICATOR '"'
+
+#define DEFAULT_EXTERN_VALUE 0
+
 void first_pass(const char *file_name);
 
 

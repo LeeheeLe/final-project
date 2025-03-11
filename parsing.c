@@ -6,10 +6,10 @@
 #include <string.h>
 
 instruction instructions[] = {
-  {DATA, "data"},
-  {STRING, "string"},
-  {ENTRY, "entry"},
-  {EXTERN, "extern"}
+  {DATA_INST, "data"},
+  {STRING_INST, "string"},
+  {ENTRY_INST, "entry"},
+  {EXTERN_INST, "extern"}
 };
 
 int is_instruction(char **line, inst *instruction_type, int line_number) {
@@ -19,15 +19,16 @@ int is_instruction(char **line, inst *instruction_type, int line_number) {
     work_line++;
   }
   if (*work_line == INSTRUCTION_START_CHAR) {
+    work_line++;
     for (i=0; i < NUMBER_OF_INSTRUCTION_TYPES; i++) {
       if (strncmp(work_line, instructions[i].name, strlen(instructions[i].name)) == 0) {
-        *line = ++work_line;
+        *line = work_line + strlen(instructions[i].name);
         *instruction_type = instructions[i].instruction;
         return 1;
       }
     }
     INVALID_INSTRUCTION(line_number);
-    *instruction_type = INVALID;
+    *instruction_type = INVALID_INST;
     return 1;
   }
   return 0;
@@ -74,7 +75,7 @@ int is_label(char **line, char **label_name) {
     *work_name = *work_line;
     work_name++;
     label_length++;
-  }
+  } //todo: length check for the labels and defining the max length somewhere
   free(name);
   return 0;
 }
