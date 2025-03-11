@@ -1,6 +1,7 @@
 #include "first_pass.h"
 #include "parsing.h"
 #include "label_table.h"
+#include "mem_image.h"
 
 int is_data_instruction(inst instruction_type) {
   return instruction_type == DATA_INST || instruction_type == STRING_INST;
@@ -9,7 +10,7 @@ int is_linking_instruction(inst instruction_type) {
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
 
-int parse_data(char *line, int line_number, enum errors *status) {
+int parse_data(char *line, int line_number, enum errors *status, memory data_image, int DC) {
   int i, num;
   char *end_ptr, *work_line = line;
   for (i = 1; *work_line != '\0'; i++) {
@@ -31,7 +32,8 @@ int parse_data(char *line, int line_number, enum errors *status) {
       *status = ERROR;
       return 0;
     }
-    // todo: write to memory and check for errors
+    data_image[DC].num.value = num;
+    // todo: check for errors
   }
 }
 
@@ -95,8 +97,12 @@ char *parse_extern(char *line, int line_number, enum errors *status) {
     return NULL;
   }
 }
+void write_str(memory data_image, int DC, char *str) {
+  // todo: implement
+}
 void first_pass(const char *file_name) {
   int IC = 100, DC = 0;
+  memory data_image;
   char *input_file;
   enum errors status = NORMAL;
   table_head *table = initialise_table();
@@ -140,12 +146,12 @@ void first_pass(const char *file_name) {
           add_label(table, label_name, DC, DATA, DEFAULT);
         }
         if (instruction_type == DATA_INST) {
-          int num_count = parse_data(work_line, line_number, &status);
+          int num_count = parse_data(work_line, line_number, &status, data_image, dc);
           DC += num_count;
         } else if (instruction_type == STRING_INST) {
           char *str = parse_string(work_line, line_number, &status);
           DC += (int)strlen(str) + 1;
-          // todo: write str to memory
+          write_str(data_image,  DC, str);
           free(str);
         }
       } else if (is_linking_instruction(instruction_type)) {
