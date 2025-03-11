@@ -63,6 +63,7 @@ char *parse_string(char *line, int line_number, enum errors *status) {
       *str = '\0';
       return orig_str;
     }
+    free(orig_str);
     EXTRA_CHARS_STRING_ERROR(line_number);
     return NULL;
   }
@@ -99,6 +100,19 @@ char *parse_extern(char *line, int line_number, enum errors *status) {
 }
 void write_str(memory data_image, int DC, char *str) {
   // todo: implement
+}
+void handle_data_instruction(int *DC, memory data_image, enum errors status,
+                             char *work_line, inst instruction_type,
+                             int line_number) {
+  if (instruction_type == DATA_INST) {
+    int num_count = parse_data(work_line, line_number, &status, data_image, dc);
+    *DC += num_count;
+  } else if (instruction_type == STRING_INST) {
+    char *str = parse_string(work_line, line_number, &status);
+    *DC += (int)strlen(str) + 1;
+    write_str(data_image, *DC, str);
+    free(str);
+  }
 }
 void first_pass(const char *file_name) {
   int IC = 100, DC = 0;
@@ -145,15 +159,8 @@ void first_pass(const char *file_name) {
         if (label_flag) {
           add_label(table, label_name, DC, DATA, DEFAULT);
         }
-        if (instruction_type == DATA_INST) {
-          int num_count = parse_data(work_line, line_number, &status, data_image, dc);
-          DC += num_count;
-        } else if (instruction_type == STRING_INST) {
-          char *str = parse_string(work_line, line_number, &status);
-          DC += (int)strlen(str) + 1;
-          write_str(data_image,  DC, str);
-          free(str);
-        }
+        handle_data_instruction(&DC, data_image, status, work_line,
+                                instruction_type, line_number);
       } else if (is_linking_instruction(instruction_type)) {
         if (label_flag) {
           LABELED_LINKING_WARNING(line_number);
