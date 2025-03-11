@@ -16,12 +16,21 @@ typedef struct {
 } operation;
 
 typedef struct {
+  int value : 21;
+  int A : 1;
+  int R : 1;
+  int E : 1;
+} operand;
+
+
+typedef struct {
   int value;
-} number;
+} data;
 
 typedef union {
-  operation op;
-  number num;
+  operation operation;
+  data data;
+  operand operand;
 } memory_word;
 
 typedef memory_word memory[MAX_MEM_SIZE];

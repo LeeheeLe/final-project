@@ -32,7 +32,7 @@ int parse_data(char *line, int line_number, enum errors *status, memory data_ima
       *status = ERROR;
       return 0;
     }
-    data_image[DC].num.value = num;
+    data_image[DC].data.value = num;
     // todo: check for errors
   }
 }

@@ -19,5 +19,4 @@ add_executable(final_project
         label_table.h
         parsing.c
         parsing.h
-        mem_image.c
-        mem_image.h)
+        second_pass.c)
