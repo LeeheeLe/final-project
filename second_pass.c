@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "input.h"
 #include <string.h>
-#include "error.h"
+#include "errors.h"
 
 /*algorithem:
 * 1. read next line from file. if end of file go to 7
