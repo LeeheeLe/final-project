@@ -23,8 +23,16 @@ void add_node(label *node, label *curr) {
     return;
   }
   if (node_cmp(*node, *curr) >= 0) {
+    if (curr->right == NULL) {
+      curr->right = node;
+      return;
+    }
     add_node(node, curr->right);
   } else {
+    if (curr->left == NULL) {
+      curr->left = node;
+      return;
+    }
     add_node(node, curr->left);
   }
 }
@@ -40,6 +48,7 @@ void add_label(table_head *head, const char *name, int value,
   node->right = NULL;
   if (head->root == NULL) {
     head->root = node;
+    return;
   }
   add_node(node, head->root);
 }
