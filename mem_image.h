@@ -1,35 +1,41 @@
 #ifndef MEM_IMAGE_H
 #define MEM_IMAGE_H
 
-#define MAX_MEM_SIZE 1<<21
+#define MAX_MEM_SIZE 1<<10
+typedef unsigned int uint;
 
 typedef struct {
-  int opcode : 6;
-  int source_type : 2; // make an enum
-  int source_reg : 3;
-  int dest_type : 2; // mae enum
-  int dest_reg : 3;
-  int funct : 5;
-  int A : 1;
-  int R : 1;
-  int E : 1;
+  uint opcode : 6;
+  uint source_type : 2; // make an enum
+  uint source_reg : 3;
+  uint dest_type : 2; // mae enum
+  uint dest_reg : 3;
+  uint funct : 5;
+  uint A : 1;
+  uint R : 1;
+  uint E : 1;
 } operation;
 
 typedef struct {
   int value : 21;
-  int A : 1;
-  int R : 1;
-  int E : 1;
+  uint A : 1;
+  uint R : 1;
+  uint E : 1;
 } operand;
 
 
 typedef struct {
-  int value;
+  int value : 24;
 } data;
+
+typedef struct {
+  char value;
+} character;
 
 typedef union {
   operation operation;
   data data;
+  character character;
   operand operand;
 } memory_word;
 
