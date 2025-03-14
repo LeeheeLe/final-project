@@ -16,7 +16,7 @@ int handle_numbers(char *line, int line_number, enum errors *status, memory data
   for (i = 1; 1; i++) {
     num = strtol(work_line, &end_ptr, 10);
     if (end_ptr == work_line) {
-      MISSING_NUMBER_OR_EXTAR_COMMA(line);
+      MISSING_NUMBER_OR_EXTRA_COMMA(line_number);
     } else {
       work_line = end_ptr;
     }
