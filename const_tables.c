@@ -1,62 +1,35 @@
 #include "const_tables.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include "errors.h"
+#include <stdio.h>
 #include <string.h>
-
-typedef struct Node {
-    char* name;
-    int opcode;
-    int funct;
-    struct Node* next_node; /*pointer to next node in list*/
-} Node;
-
-Node* new_node(char* name, int opcode, int funct) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    if (!new_node) {
-        MEM_ALOC_ERROR();
-        exit(1);
-    }
-    new_node->name = strdup(name); /*duplicate string to avoid pointer errors*/
-    new_node->opcode = opcode;
-    new_node->funct = funct;
-    new_node->next_node = NULL;
-
-    return new_node;
-}
+static const operation_syntax no_operation = {NULL, -1, -1, {0,0,0,0}, {0,0,0,0}};
+static const operation_syntax operations[] = {
+    {"mov", 0, 0, {1, 1, 0, 1}, {0, 1, 0, 1}},
+    {"cmp", 1, 0, {1, 1, 0, 1}, {1, 1, 0, 1}},
+    {"add", 2, 1, {1, 1, 0, 1}, {0, 1, 0, 1}},
+    {"sub", 2, 2, {1, 1, 0, 1}, {0, 1, 0, 1}},
+    {"lea", 4, 0, {0, 1, 0, 0}, {0, 1, 0, 1}},
+    {"clr", 5, 1, {0, 0, 0, 0}, {0, 1, 0, 1}},
+    {"not", 5, 2, {0, 0, 0, 0}, {0, 1, 0, 1}},
+    {"inc", 5, 3, {0, 0, 0, 0}, {0, 1, 0, 1}},
+    {"dec", 5, 4, {0, 0, 0, 0}, {0, 1, 0, 1}},
+    {"jmp", 9, 1, {0, 0, 0, 0}, {0, 1, 1, 0}},
+    {"bne", 9, 2, {0, 0, 0, 0}, {0, 1, 1, 0}},
+    {"jsr", 9, 3, {0, 0, 0, 0}, {0, 1, 1, 0}},
+    {"red", 12,0, {0, 0, 0, 0}, {0, 1, 0, 3}},
+    {"prn", 13,0, {0, 0, 0, 0}, {1, 1, 0, 1}},
+    {"rts", 14,0, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    {"stop",15,0, {0, 0, 0, 0}, {0, 0, 0, 0}}};
+const int num_of_operations = sizeof(operations) / sizeof(operation_syntax);
 
 /*input name, output opcode*/
-int find_opcode(char* name, Node* head) {
-  Node* current;
-  for (current = head; current != NULL; current = current->next_node) {
-    if (current->name == name) {
-      return current->opcode;
+operation_syntax find_operation(char *name) {
+  int i;
+  for (i = 0; i < num_of_operations; i++) {
+    if (strcmp(operations[i].name, name) == 0) {
+      return operations[i];
     }
   }
-  UNEXISTING_NAME(name);
-  return -1; /*name does not exist*/
+  NON_EXISTANT_NAME(name);
+  return no_operation; /*name does not exist*/
 }
-
-/*input name, output funct*/
-int find_funct(char* name, Node* head) {
-    Node* current;
-    for (current = head; current != NULL; current = current->next_node) {
-        if (current->name == name) {
-            return current->funct;
-        }
-    }
-    UNEXISTING_NAME(name);
-    return -1; /*name does not exist*/
-}
-
-void free_list(Node* head) {
-  Node* current = head;
-  Node* next_node;
-  while (current != NULL) {
-    next_node = current->next_node;
-    free(current);
-    current = next_node;
-  }
-}
-
-/*TODO: implement the values in the table - how?*/

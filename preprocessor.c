@@ -4,7 +4,7 @@
 
 struct macro_table *preprocess(const char *file_name) {
     int macro_idx, line_number = -1;
-    error_code ecode = NORMAL;
+    enum errors ecode = NORMAL;
     struct macro_table *curr_macro, *head_macro;
     head_macro = malloc(sizeof(struct  macro_table));
     char *input_file, *output_file;
@@ -107,7 +107,7 @@ int mcro_start(const char *line) {
     return 0;
 }
 
-int mcro_end(const char *line, error_code *ecode, const int line_number) {
+int mcro_end(const char *line, enum errors *ecode, const int line_number) {
     int i, j;
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
     }
@@ -141,7 +141,7 @@ int is_reserved_name(char *mcro_name){
     return 0; /*valid macro name*/
 }
 
-void insert_macro_name(const char *line, struct macro_table *curr_macro, error_code *ecode, int line_number) {
+void insert_macro_name(const char *line, struct macro_table *curr_macro, enum errors *ecode, int line_number) {
     int i, j;
     char *macro_name = malloc(strlen(line) * sizeof(char));
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
@@ -167,7 +167,7 @@ void insert_macro_name(const char *line, struct macro_table *curr_macro, error_c
     EXTRA_CHARS_MACRO_ERROR(line_number);
 }
 
-int is_saved_macro(const char *line, struct macro_table *head, error_code *ecode) {
+int is_saved_macro(const char *line, struct macro_table *head, enum errors *ecode) {
     int i, j, k = 0;
     struct macro_table curr = *head;
     while (&curr != NULL && curr.macro_name != NULL) {

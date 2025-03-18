@@ -20,6 +20,7 @@
  * 7. we have read the entire source code. if found errors stop here
  * 8. build output files*/
 
+/*
 struct second_pass *second_pass(const char *file_name) {
   char *input_file;
   int line_number = 1;
@@ -30,7 +31,7 @@ struct second_pass *second_pass(const char *file_name) {
   }
   input_file = strcpy(input_file, file_name);
   strcat(input_file, INPUT_EXT);
-  FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
+  FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode#1#
   free(input_file);
   if (input == NULL) {
     FILE_OPEN_ERROR();
@@ -38,7 +39,7 @@ struct second_pass *second_pass(const char *file_name) {
   }
   char *work_line, *line, *label_name;
   inst instruction_type;
-  while ((work_line = line = getLine(input)) != NULL) { /*while not EOF*/
+  while ((work_line = line = getLine(input)) != NULL) { /*while not EOF#1#
     line_number++;
     if (is_label(&work_line, &label_name)) {
       free(line);
@@ -47,24 +48,25 @@ struct second_pass *second_pass(const char *file_name) {
     if (is_instruction(&work_line, &instruction_type, line_number)) {
       if (instruction_type == ENTRY_INST) {
         add_entry_to_label_table(line); /*if label not in the table, error in
-                                           the implementation of func*/
+                                           the implementation of func#1#
         free(line);
       }
       free(line);
       continue;
     }
-    /*stage 6: complete the binary coding of the operands*/
-    find_value_in_label_table(line); /*return error if not in the table*/
+    /*stage 6: complete the binary coding of the operands#1#
+    find_value_in_label_table(line); /*return error if not in the table#1#
   }
   if (is_entry_flag == 1) {
     add_extern_adress(line);
   }
 }
-  /* finished reading the file. go to 7: if found errors stop here */
+  /* finished reading the file. go to 7: if found errors stop here #1#
 
   fclose(input);
   fclose(output);
 }
 build_output_files(input_file, output_file) {}
+*/
 
 /* TODO: implement is_label() add_entry_to_label_table... */

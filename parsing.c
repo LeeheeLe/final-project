@@ -79,3 +79,66 @@ int is_label(char **line, char **label_name) {
   free(name);
   return 0;
 }
+
+char *parse_string(char *line, int line_number, enum errors *status) {
+  char *work_line = line;
+  while (isspace(*work_line)) {
+    work_line++;
+  }
+  if (*work_line == '\0') {
+    MISSING_INSTRUCTION_PARAM(line_number);
+    *status = ERROR;
+    return NULL;
+  }
+  if (*work_line == STR_INDICATOR) {
+    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    orig_str = str;
+    work_line++;
+    while (*work_line != '\0') {
+      if (*work_line != STR_INDICATOR) {
+        *str++ = *work_line++;
+      } else {
+        work_line++;
+        break;
+      }
+    }
+    if (*work_line == '\0' || is_whitespace(work_line)) {
+      *str = '\0';
+      return orig_str;
+    }
+    free(orig_str);
+    EXTRA_CHARS_STRING_ERROR(line_number);
+    return NULL;
+  }
+  MISSING_STRING_INDICATOR(line_number);
+  return NULL;
+}
+char *parse_extern(char *line, int line_number, enum errors *status) {
+  char *work_line = line;
+  while (isspace(*work_line)) {
+    work_line++;
+  }
+  if (*work_line == '\0' || is_whitespace(work_line)) {
+    MISSING_INSTRUCTION_PARAM(line_number);
+    *status = ERROR;
+    return NULL;
+  }
+  if (isalpha(*work_line)) {
+    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    orig_str = str;
+    for (; *work_line != '\0' && !isspace(*work_line) && isalnum(*work_line);
+         work_line++) {
+      *str++ = *work_line;
+         }
+    if (*work_line == '\0' || is_whitespace(work_line)) {
+      *str = '\0';
+      if (strlen(orig_str) > 31) {
+        LABEL_TOO_LONG(line_number);
+      }
+      return orig_str;
+    }
+    EXTRA_CHARS_EXTERN_ERROR(line_number);
+    return NULL;
+  }
+  return NULL;
+}

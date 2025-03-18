@@ -6,9 +6,9 @@ typedef unsigned int uint;
 
 typedef struct {
   uint opcode : 6;
-  uint source_type : 2; // make an enum
+  uint source_type : 2; // todo make an enum
   uint source_reg : 3;
-  uint dest_type : 2; // mae enum
+  uint dest_type : 2; // todo make enum
   uint dest_reg : 3;
   uint funct : 5;
   uint A : 1;
