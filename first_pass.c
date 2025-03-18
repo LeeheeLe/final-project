@@ -6,7 +6,7 @@
 int is_data_instruction(inst instruction_type) {
   return instruction_type == DATA_INST || instruction_type == STRING_INST;
 }
-int is_linking_instruction(inst instruction_type) {
+int is_linking_instruction(inst instruction_type) { /* is extern or entry*/
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
 
