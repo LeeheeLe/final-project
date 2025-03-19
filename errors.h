@@ -20,6 +20,7 @@
 #define MISSING_COMMA(line) printf("Error in line %d: missing comma.\n", line)
 #define MISSING_NUMBER_OR_EXTRA_COMMA(line) printf("Error in line %d: missing number or extraneous comma.\n", line)
 #define NON_EXISTANT_NAME(name) printf("The operation named %s does not exist.\n", name);
+#define MISSING_OPERAND(line) printf("Error in line %d: missing operand.\n", line)
 
 /*warnings*/
 #define LABELED_LINKING_WARNING(line) printf("Warning in line %d: labeling a .extern or a .entry instruction has no meaning.\n", line)

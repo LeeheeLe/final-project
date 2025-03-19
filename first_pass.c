@@ -7,11 +7,21 @@
 extern char *str_dup(const char *src);
 
 #define MAX_OPERATION_LEN 3
+#define IMMEDIATE_PARAM_INDICATOR '#'
+
+#define REGISTER_INDICATOR 'r'
+#define REGISTER_COUNT 8
+
+#define RELATIVE_INDICATOR '&'
+
+#define OPERAND_SEPARATOR ','
 
 #define IGNORE_WHITESPACE(work_line)                                           \
   while (isspace(*work_line)) {                                                \
     work_line++;                                                               \
   }
+
+enum op_type { DEST, SOURCE };
 
 int is_data_instruction(inst instruction_type) {
   return instruction_type == DATA_INST || instruction_type == STRING_INST;
@@ -103,20 +113,215 @@ void handle_instruction(int DC, memory *data_image, enum errors *status,
   }
 }
 
-int parse_operation(char **work_line, int line_number, memory_word *temp,
-                    enum errors *errors, char **source_label,
-                    char **dest_label) {
-  // this should parse the entire line, finding the operation and its paramaters
-  char *copy = str_dup(*work_line);
-  IGNORE_WHITESPACE(copy);
-  copy = strtok(copy, " ");
-  operation_syntax syntax = find_operation(copy);
+bool is_empty(struct operand_type type) {
+  static struct operand_type empty_operand = {0, 0, 0, 0};
+  return (type.ADDRESS == empty_operand.ADDRESS) &&
+         (type.IMMEDIATE == empty_operand.IMMEDIATE) &&
+         (type.REGISTER == empty_operand.REGISTER) &&
+         (type.RELATIVE == empty_operand.RELATIVE);
+}
 
+bool handle_no_operand_operation(memory_word *temp, char **source_label,
+                                 char **dest_label, char *line,
+                                 operation_syntax syntax, int *value1) {
+  if (is_whitespace(line)) {
+    *source_label = NULL;
+    *dest_label = NULL;
+    temp->data.value = 0;
+    temp->operation.opcode = syntax.opcode;
+    *value1 = 1;
+    return true;
+  }
+  // todo - error handling
+  return false;
+}
+bool is_register(char *operand) {
+  if (*operand == REGISTER_INDICATOR) {
+    const int register_number = *(operand + 1) - '0';
+    if (register_number < 0 || register_number > REGISTER_COUNT) {
+      // not a register, might be a label starting with r like "r8" or "right"
+      return false;
+    }
+    if (is_whitespace(operand + 2)) {
+      return true;
+    }
+    // might be a label like "r3d" which is valid
+    return false;
+  }
+  return false;
+}
+int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
+                    char **operand_label, int operand_number, enum op_type type,
+                    bool *relative) {
+  char *endptr;
+  *relative = false;
+  if (*operand == IMMEDIATE_PARAM_INDICATOR) {
+    *operand++;
+    *operand_label = NULL;
+    temp[operand_number].data.value = 0;
+    temp[operand_number].operand.value = strtol(operand, &endptr, 10);
+    temp[operand_number].operand.A = 1;
+    if (type == DEST) {
+      temp->operation.dest_type = 0;
+      temp->operation.dest_reg = 0;
+    } else if (type == SOURCE) {
+      temp->operation.source_type = 0;
+      temp->operation.source_reg = 0;
+    }
+    if (endptr == operand || !is_whitespace(endptr)) {
+      MISSING_OPERAND(*operand);
+      // todo throw error
+    }
+    *operand_label = NULL;
+    return 1;
+  }
+  if (is_register(operand)) {
+    *operand_label = NULL;
+    if (type == DEST) {
+      temp->operation.dest_reg = *(operand + 1) - '0';
+      temp->operation.dest_type = 3; // todo enum instead of value
+    } else if (type == SOURCE) {
+      temp->operation.source_reg = *(operand + 1) - '0';
+      temp->operation.source_type = 3; // todo enum instead of value
+    }
+    return 0;
+  }
+  // label operand
+  if (*operand == RELATIVE_INDICATOR) {
+    *relative = true;
+    if (type == DEST) {
+      temp->operation.dest_type = 2;
+      temp->operation.dest_reg = 0;
+    } else if (type == SOURCE) {
+      temp->operation.source_type = 2;
+      temp->operation.source_reg = 0;
+    }
+    *operand++;
+  }
+  char *label = malloc(strlen(operand) + 1);
+  int i;
+  if (label == NULL) {
+    MEM_ALOC_ERROR();
+    free(label);
+    return -1;
+  }
+  for (i = 0; true; operand++) {
+    if (isspace(*operand) || *operand == '\0') {
+      label[i] = '\0';
+      break;
+    }
+    label[i] = *operand;
+    i++;
+  }
+  *operand_label = label;
+  if (*relative == false && type == DEST) {
+    temp->operation.dest_type = 1;
+    temp->operation.dest_reg = 0;
+  } else if (*relative == false && type == SOURCE) {
+    temp->operation.source_type = 1;
+    temp->operation.source_reg = 0;
+  }
+  return 1;
+}
+int parse_operation(char **work_line, int line_number,
+                    memory_word temp[MAX_OPERATION_LEN], enum errors *errors,
+                    char **source_label, char **dest_label) {
+  // this should parse the entire line, finding the operation and its operands
+  int i;
+  int word_count = 1;
+  char *line = *work_line;
+  char *copy = malloc(strlen(*work_line) + 1);
+  if (copy == NULL) {
+    MEM_ALOC_ERROR();
+    return -1;
+  }
+  IGNORE_WHITESPACE(line);
+  for (i = 0; *line != '\0'; line++) {
+    if (isspace(*line)) {
+      copy[i] = '\0';
+      break;
+    }
+    copy[i] = *line;
+    i++;
+  }
+  operation_syntax syntax = find_operation(copy);
+  if (is_empty(syntax.source_type) && is_empty(syntax.destination_type)) {
+    if (handle_no_operand_operation(temp, source_label, dest_label, line,
+                                    syntax, &word_count) == true)
+      return word_count; // todo error handling
+  } else if (is_empty(syntax.source_type)) {
+    // one operand of a type from dest_type from found syntax, line should be
+    // the operand with spaces
+    IGNORE_WHITESPACE(line);
+    if (*line == '\0') {
+      MISSING_OPERAND(line_number);
+      return -1;
+    }
+    bool relative = false;
+    temp->operation.opcode = syntax.opcode;
+    temp->operation.funct = syntax.funct;
+    word_count += extract_operand(line, temp, dest_label, 1, DEST, &relative);
+    if (dest_label != NULL) {
+      /*todo add intern with relative and code/data label based on the
+       * operation and check if the operand type is valid for the given syntax*/
+    }
+  } else if (!is_empty(syntax.destination_type) &&
+             !is_empty(syntax.source_type)) {
+    temp->operation.opcode = syntax.opcode;
+    temp->operation.funct = syntax.funct;
+    char *param1, *param2;
+    bool relative1, relative2;
+    param1 = malloc(strlen(*work_line) + 1);
+    param2 = malloc(strlen(*work_line) + 1);
+    if (param1 == NULL || param2 == NULL) {
+      MEM_ALOC_ERROR();
+      free(param1);
+      free(param2);
+      return -1;
+    }
+    IGNORE_WHITESPACE(line);
+    for (i = 0; *line != '\0'; line++) {
+      if (isspace(*line) || *line == OPERAND_SEPARATOR) {
+        break;
+      }
+      param1[i] = *line;
+      i++;
+    }
+    param1[i] = '\0';
+    IGNORE_WHITESPACE(line);
+    if (*line != OPERAND_SEPARATOR) {
+      MISSING_COMMA(line_number);
+      return -1;
+    }
+    line++;
+    IGNORE_WHITESPACE(line);
+    if (*line == '\0') {
+      MISSING_OPERAND(line_number);
+      return -1;
+    }
+    for (i = 0; *line != '\0'; line++) {
+      if (isspace(*line)) {
+        break;
+      }
+      param2[i] = *line;
+      i++;
+    }
+    param2[i] = '\0';
+    word_count +=
+        extract_operand(param1, temp, source_label, 1, SOURCE, &relative1);
+    word_count +=
+        extract_operand(param2, temp, dest_label, 2, DEST, &relative2);
+  }
+
+  return word_count;
 }
 int handle_operation(char **work_line, enum errors *status, table_head *table,
-                     int line_number, memory *code_image, const int IC) {
+                     int line_number, memory code_image, const int IC) {
   int i;
   static memory_word temp[MAX_OPERATION_LEN];
+  for (i = 0; i < MAX_OPERATION_LEN; i++) {
+    temp[i].data.value = 0;
+  }
   char *source_label, *dest_label;
   int op_size = parse_operation(work_line, line_number, temp, status,
                                 &source_label, &dest_label);
@@ -127,7 +332,7 @@ int handle_operation(char **work_line, enum errors *status, table_head *table,
     // todo add intern with IC+op_size-1
   }
   for (i = 0; i < op_size; i++) {
-    *code_image[IC + i] = temp[i];
+    code_image[IC + i] = temp[i];
   }
   return op_size;
 }
@@ -180,9 +385,8 @@ void first_pass(const char *file_name) {
     if (label_flag) {
       add_label(table, label_name, IC, CODE, DEFAULT);
     }
-    // todo: calculate binary code of operation and encode it
-    IC +=
-        handle_operation(&work_line, &status, table, line_number, &code_image, IC);
+    IC += handle_operation(&work_line, &status, table, line_number, code_image,
+                           IC);
     free(line);
   }
 }
