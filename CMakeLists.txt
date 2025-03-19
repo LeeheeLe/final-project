@@ -22,4 +22,6 @@ add_executable(final_project
         second_pass.c
         const_tables.c
         intern_table.c
-        intern_table.h)
+        intern_table.h
+        mem_image.c
+        mem_image.h)
