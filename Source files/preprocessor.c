@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "input.h"
-#include "preprocessor.h"
+#include "../Header files/input.h"
+#include "../Header files/preprocessor.h"
 
 struct macro_table *preprocess(const char *file_name) {
     int macro_idx, line_number = -1;

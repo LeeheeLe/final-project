@@ -1,5 +1,5 @@
-#include "input.h"
-#include "errors.h"
+#include "../Header files/input.h"
+#include "../Header files/errors.h"
 
 /*TODO: write detailed documentation (like in mamans: after every var, before functions, in the head of source files.) Lets do this after our tests*/
 char *getLine(FILE *input) {

@@ -1,5 +1,5 @@
-#include "parsing.h"
-#include "errors.h"
+#include "../Header files/parsing.h"
+#include "../Header files/errors.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,9 @@
-#include "first_pass.h"
-#include "label_table.h"
-#include "mem_image.h"
-#include "parsing.h"
+#include "../Header files/first_pass.h"
+#include "../Header files/label_table.h"
+#include "../Header files/mem_image.h"
+#include "../Header files/parsing.h"
+#include "../Header files/const_tables.h"
 
-#include <const_tables.h>
 extern char *str_dup(const char *src);
 
 #define MAX_OPERATION_LEN 3
@@ -26,7 +26,7 @@ enum op_type { DEST, SOURCE };
 int is_data_instruction(inst instruction_type) {
   return instruction_type == DATA_INST || instruction_type == STRING_INST;
 }
-int is_linking_instruction(inst instruction_type) { /* is extern or entry*/
+int is_linking_instruction(inst instruction_type) { /*is extern or entry*/
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
 void check_label_conflicts(enum errors *status, const table_head *table,

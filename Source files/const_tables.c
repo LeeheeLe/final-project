@@ -1,7 +1,8 @@
-#include "const_tables.h"
-#include "errors.h"
+#include "../Header files/const_tables.h"
+#include "../Header files/errors.h"
 #include <stdio.h>
 #include <string.h>
+
 static const operation_syntax no_operation = {NULL, -1, -1, {0,0,0,0}, {0,0,0,0}};
 static const operation_syntax operations[] = {
     {"mov", 0, 0, {1, 1, 0, 1}, {0, 1, 0, 1}},

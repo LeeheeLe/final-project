@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include "preprocessor.h"
-#include "first_pass.h"
-#include <stdlib.h>
+#include "../Header files/preprocessor.h"
+#include "../Header files/first_pass.h"
 
 int main(const int argc, char *argv[]) {
 

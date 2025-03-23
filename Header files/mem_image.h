@@ -1,6 +1,6 @@
 #ifndef MEM_IMAGE_H
 #define MEM_IMAGE_H
-
+#define START_ADDRESS 100
 #define MAX_MEM_SIZE 1<<10
 typedef unsigned int uint;
 

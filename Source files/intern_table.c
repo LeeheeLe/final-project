@@ -1,5 +1,5 @@
-#include "intern_table.h"
-#include "errors.h"
+#include "../Header files/intern_table.h"
+#include "../Header files/errors.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +20,7 @@ typedef struct Intern {
   char *name;
   enum intern_type type;
   int mem_place;
-  struct Intern *next_intern;;
+  struct Intern *next_intern;
 } Intern;
 
 Intern* new_intern(char* name, enum intern_type type, int mem_place) {

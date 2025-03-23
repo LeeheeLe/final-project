@@ -1,4 +1,4 @@
-#include "label_table.h"
+#include "../Header files/label_table.h"
 
 #include <stdlib.h>
 #include <string.h>

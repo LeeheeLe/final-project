@@ -1,6 +1,7 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
+
 /*Memory error macros*/
 #define MEM_ALOC_ERROR() printf("Error: memory allocation error.\n")
 #define FILE_OPEN_ERROR() printf("Error: failed to open file.\n")
@@ -21,6 +22,7 @@
 #define MISSING_NUMBER_OR_EXTRA_COMMA(line) printf("Error in line %d: missing number or extraneous comma.\n", line)
 #define NON_EXISTANT_NAME(name) printf("The operation named %s does not exist.\n", name);
 #define MISSING_OPERAND(line) printf("Error in line %d: missing operand.\n", line)
+#define FILE_EXTENSION_ERROR(file_name) printf("Error in file %d: file names entered should not include the extention.\n", file_name)
 
 /*warnings*/
 #define LABELED_LINKING_WARNING(line) printf("Warning in line %d: labeling a .extern or a .entry instruction has no meaning.\n", line)

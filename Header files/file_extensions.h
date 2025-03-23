@@ -1,10 +1,11 @@
-
-
 #ifndef FILE_EXTENSIONS_H
 #define FILE_EXTENSIONS_H
 
 #define PREPROCESSOR_INPUT_EXT ".as"
 #define PREPROCESSOR_OUTPUT_EXT ".am"
 
+#define OBJECT_FILE_EXTENTION ".ob"
+#define EXTERNALS_FILE_EXTENTION ".ext"
+#define ENTRIES_FILE_EXTENTION ".ent"
 
 #endif /*FILE_EXTENSIONS_H*/

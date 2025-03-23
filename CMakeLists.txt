@@ -6,22 +6,22 @@ set(CMAKE_C_STANDARD 90)
 include_directories(.)
 
 add_executable(final_project
-        errors.h
-        input.c
-        input.h
-        main.c
-        preprocessor.c
-        preprocessor.h
-        first_pass.c
-        first_pass.h
-        file_extensions.h
-        label_table.c
-        label_table.h
-        parsing.c
-        parsing.h
-        second_pass.c
-        const_tables.c
-        intern_table.c
-        intern_table.h
-        mem_image.c
-        mem_image.h)
+        "Header files/errors.h"
+        "source files/input.c"
+        "Header files/input.h"
+        "source files/main.c"
+        "source files/preprocessor.c"
+        "Header files/preprocessor.h"
+        "source files/first_pass.c"
+        "Header files/first_pass.h"
+        "Header files/file_extensions.h"
+        "source files/label_table.c"
+        "Header files/label_table.h"
+        "source files/parsing.c"
+        "Header files/parsing.h"
+        "source files/second_pass.c"
+        "source files/const_tables.c"
+        "source files/intern_table.c"
+        "Header files/intern_table.h"
+        "source files/mem_image.c"
+        "Header files/mem_image.h")
