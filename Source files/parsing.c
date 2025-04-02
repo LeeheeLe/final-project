@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Array of instructions supported by the assembler.
+ * Each instruction has an associated type and name.
+ */
 instruction instructions[] = {
   {DATA_INST, "data"},
   {STRING_INST, "string"},
@@ -12,6 +16,19 @@ instruction instructions[] = {
   {EXTERN_INST, "extern"}
 };
 
+/*
+ * Checks if the given line starts with a valid instruction.
+ *
+ * This function searches for an instruction (like "data", "string") at the start of
+ * the line, skips over any whitespace, and sets the instruction type if found.
+ * If the instruction is invalid, it calls an error handler.
+ *
+ * @param line The line of code to check for an instruction.
+ * @param instruction_type Pointer to the instruction type to be set if a valid instruction is found.
+ * @param line_number The line number of the current line for error handling.
+ *
+ * @return int Returns 1 if an instruction is found, 0 if no instruction is found.
+ */
 int is_instruction(char **line, inst *instruction_type, int line_number) {
   char *work_line = *line;
   int i;
@@ -34,7 +51,16 @@ int is_instruction(char **line, inst *instruction_type, int line_number) {
   return 0;
 }
 
-
+/*
+ * Checks if a given line consists only of whitespace.
+ *
+ * This function iterates over the line, skipping any leading whitespace characters,
+ * and checks if the remaining characters are all whitespace or if the string is empty.
+ *
+ * @param line The line to check.
+ *
+ * @return int Returns 1 if the line is empty or consists only of whitespace, otherwise 0.
+ */
 int is_whitespace(const char *line) {
   if (strlen(line) == 0) {
     return 1;
@@ -45,6 +71,15 @@ int is_whitespace(const char *line) {
   return *line == '\0';
 }
 
+/*
+ * Checks if the given line is a comment.
+ *
+ * A line is considered a comment if it starts with a semicolon (';').
+ *
+ * @param line The line to check.
+ *
+ * @return int Returns 1 if the line is a comment, otherwise 0.
+ */
 int is_comment(const char *line) {
   if (*line == ';') {
     return 1;
@@ -52,6 +87,19 @@ int is_comment(const char *line) {
   return 0;
 }
 
+/*
+ * Checks if a given line starts with a valid label.
+ *
+ * This function searches for a label at the beginning of the line,
+ * validating that the label starts with a letter and only contains
+ * alphanumeric characters or the label definition character. The label
+ * name is returned through the `label_name` pointer.
+ *
+ * @param line The line to check for a label.
+ * @param label_name Pointer to a string where the label name will be stored if found.
+ *
+ * @return int Returns 1 if a valid label is found, 0 if no label is found.
+ */
 int is_label(char **line, char **label_name) {
   int label_length = 0;
   char *work_name = malloc(32 * sizeof(char)), *work_line = *line;
@@ -80,6 +128,20 @@ int is_label(char **line, char **label_name) {
   return 0;
 }
 
+/*
+ * Parses a string from the given line.
+ *
+ * This function looks for a string enclosed in quotation marks ('"'). It extracts
+ * the string, skips over the quotation marks, and returns the extracted string.
+ * If the string is malformed (like missing quotation marks or extra characters),
+ * an error is generated.
+ *
+ * @param line The line from which to extract the string.
+ * @param line_number The line number for error handling.
+ * @param status Pointer to the status of the parsing process (either success or error).
+ *
+ * @return char* Returns the parsed string, or NULL if there was an error.
+ */
 char *parse_string(char *line, int line_number, enum errors *status) {
   char *work_line = line;
   while (isspace(*work_line)) {
@@ -113,6 +175,20 @@ char *parse_string(char *line, int line_number, enum errors *status) {
   MISSING_STRING_INDICATOR(line_number);
   return NULL;
 }
+
+/*
+ * Parses an extern label from the given line.
+ *
+ * This function extracts an external label from the line, which consists of alphanumeric
+ * characters, and ensures that it doesn't exceed a predefined length. It returns the
+ * label name, or NULL if there is an error (like extra characters or missing label).
+ *
+ * @param line The line from which to extract the extern label.
+ * @param line_number The line number for error handling.
+ * @param status Pointer to the status of the parsing process (either success or error).
+ *
+ * @return char* Returns the extern label, or NULL if there was an error.
+ */
 char *parse_extern(char *line, int line_number, enum errors *status) {
   char *work_line = line;
   while (isspace(*work_line)) {
