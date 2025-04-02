@@ -126,7 +126,13 @@ int mcro_end(const char *line, enum errors *ecode, const int line_number) {
     return 0;
 }
 
-char *reserved_names[28] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+/*
+ * reserved_names - A list of reserved names in the assembly language.
+ *
+ * These reserved names cannot be used as macro names, labels, or instructions.
+ */
+char *reserved_names[28] = {
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
     "jsr", "red", "prn", "rts", "stop", ".data", ".string",".entry", ".extern"};
 
