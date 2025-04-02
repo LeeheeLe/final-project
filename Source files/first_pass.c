@@ -1,34 +1,81 @@
+/*
+ * File: first_pass.c
+ * Purpose: This file performs the first pass of an assembler program, parsing instructions and processing labels.
+ * It generates the data and code images.
+ */
+
 #include "../Header files/first_pass.h"
 #include "../Header files/label_table.h"
 #include "../Header files/mem_image.h"
 #include "../Header files/parsing.h"
 #include "../Header files/const_tables.h"
-
+/*todo: divide this huge file to mini files according to similar tasks*/
+/* Function to duplicate a string.*/
 extern char *str_dup(const char *src);
 
-#define MAX_OPERATION_LEN 3
-#define IMMEDIATE_PARAM_INDICATOR '#'
+#define MAX_OPERATION_LEN 3         /* Maximum length of an operation.*/
+#define IMMEDIATE_PARAM_INDICATOR '#'  /*Indicator for immediate parameter.*/
+#define REGISTER_INDICATOR 'r'         /*Indicator for register.*/
+#define REGISTER_COUNT 8              /*Number of registers.*/
+#define RELATIVE_INDICATOR '&'        /*Indicator for relative operand.*/
+#define OPERAND_SEPARATOR ','         /*Separator between operands.*/
 
-#define REGISTER_INDICATOR 'r'
-#define REGISTER_COUNT 8
-
-#define RELATIVE_INDICATOR '&'
-
-#define OPERAND_SEPARATOR ','
-
+/*
+ * Macro to skip whitespaces in a line.
+ */
 #define IGNORE_WHITESPACE(work_line)                                           \
   while (isspace(*work_line)) {                                                \
     work_line++;                                                               \
   }
 
+/*
+ * Enum representing the two operand types: source and destination.
+ */
 enum op_type { DEST, SOURCE };
 
+/*
+ * Function: is_data_instruction
+ * Checks if the given instruction is a data type instruction.
+ *
+ * Parameters:
+ *   instruction_type - The type of instruction to check.
+ *
+ * Returns:
+ *   - 1 if it is a data instruction (DATA_INST or STRING_INST).
+ *   - 0 otherwise.
+ */
 int is_data_instruction(inst instruction_type) {
   return instruction_type == DATA_INST || instruction_type == STRING_INST;
 }
-int is_linking_instruction(inst instruction_type) { /*is extern or entry*/
+
+/*
+ * Function: is_linking_instruction
+ * Checks if the given instruction is a linking type instruction (extern or entry).
+ *
+ * Parameters:
+ *   instruction_type - The type of instruction to check.
+ *
+ * Returns:
+ *   - 1 if it is a linking instruction (EXTERN_INST or ENTRY_INST).
+ *   - 0 otherwise.
+ */
+int is_linking_instruction(inst instruction_type) {
   return instruction_type == EXTERN_INST || instruction_type == ENTRY_INST;
 }
+
+/*
+ * Function: check_label_conflicts
+ * Checks if a label already exists in the label table and handles conflicts.
+ *
+ * Parameters:
+ *   status - Pointer to the current status of the assembler (for error handling).
+ *   table - Pointer to the label table.
+ *   label_name - The label name to check for conflicts.
+ *   line_number - The line number where the conflict is found.
+ *
+ * Side Effects:
+ *   - Sets the status to ERROR if a conflict is found.
+ */
 void check_label_conflicts(enum errors *status, const table_head *table,
                            char *label_name, const int line_number) {
   if (find_label(label_name, *table) != NULL) {
@@ -37,6 +84,20 @@ void check_label_conflicts(enum errors *status, const table_head *table,
   }
 }
 
+/*
+ * Function: handle_numbers
+ * Parses numbers from a line, handling the parsing and storing them in the data image.
+ *
+ * Parameters:
+ *   line - The line of text containing the numbers.
+ *   line_number - The line number in the source file.
+ *   status - Pointer to the assembler's current status (for error handling).
+ *   data_image - The memory image for data storage.
+ *   DC - The data counter, keeps track of the current data position.
+ *
+ * Returns:
+ *   - The number of numbers parsed from the line.
+ */
 int handle_numbers(char *line, int line_number, enum errors *status,
                    memory data_image, int DC) {
   int i, num;
@@ -63,10 +124,18 @@ int handle_numbers(char *line, int line_number, enum errors *status,
       *status = ERROR;
       return 0;
     }
-    // todo: check for errors
   }
 }
 
+/*
+ * Function: write_str
+ * Writes a string to the data image.
+ *
+ * Parameters:
+ *   data_image - The memory image for data storage.
+ *   DC - The current data counter.
+ *   str - The string to write.
+ */
 void write_str(memory data_image, int DC, char *str) {
   int i = 0;
   while (*str != '\0') {
@@ -77,6 +146,18 @@ void write_str(memory data_image, int DC, char *str) {
   data_image[DC + i].character.value = '\0';
 }
 
+/*
+ * Function: handle_data_instruction
+ * Handles data-type instructions (DATA_INST, STRING_INST) by parsing and storing the data.
+ *
+ * Parameters:
+ *   DC - Pointer to the current data counter.
+ *   data_image - The memory image for data storage.
+ *   status - Pointer to the assembler's current status (for error handling).
+ *   work_line - The line of text containing the data instruction.
+ *   instruction_type - The type of data instruction (DATA_INST or STRING_INST).
+ *   line_number - The current line number.
+ */
 void handle_data_instruction(int *DC, memory data_image, enum errors *status,
                              char *work_line, inst instruction_type,
                              int line_number) {
@@ -92,6 +173,21 @@ void handle_data_instruction(int *DC, memory data_image, enum errors *status,
   }
 }
 
+/*
+ * Function: handle_instruction
+ * Handles instructions (both data and linking) and updates the label table and memory images.
+ *
+ * Parameters:
+ *   DC - The current data counter.
+ *   data_image - The memory image for data storage.
+ *   status - Pointer to the assembler's current status (for error handling).
+ *   table - Pointer to the label table.
+ *   work_line - The line containing the instruction to handle.
+ *   label_name - Pointer to the label name (if present).
+ *   instruction_type - The type of instruction.
+ *   line_number - The current line number.
+ *   label_flag - Indicates whether a label is present.
+ */
 void handle_instruction(int DC, memory *data_image, enum errors *status,
                         table_head *table, char *work_line, char **label_name,
                         inst instruction_type, int line_number,
@@ -113,6 +209,17 @@ void handle_instruction(int DC, memory *data_image, enum errors *status,
   }
 }
 
+/*
+ * Function: is_empty
+ * Checks if the given operand is empty (no valid data).
+ *
+ * Parameters:
+ *   type - The operand type to check.
+ *
+ * Returns:
+ *   - 1 if the operand is empty (all fields are 0).
+ *   - 0 if the operand has non-zero values.
+ */
 bool is_empty(struct operand_type type) {
   static struct operand_type empty_operand = {0, 0, 0, 0};
   return (type.ADDRESS == empty_operand.ADDRESS) &&
@@ -121,6 +228,22 @@ bool is_empty(struct operand_type type) {
          (type.RELATIVE == empty_operand.RELATIVE);
 }
 
+/*
+ * Function: handle_no_operand_operation
+ * Handles operations that do not have operands, setting the appropriate values.
+ *
+ * Parameters:
+ *   temp - The memory word to store the operation.
+ *   source_label - The source operand label (if present).
+ *   dest_label - The destination operand label (if present).
+ *   line - The line of text containing the operation.
+ *   syntax - The syntax structure for the operation.
+ *   value1 - A pointer to an integer to store the value.
+ *
+ * Returns:
+ *   - 1 if the operation was handled successfully.
+ *   - 0 if there was an error.
+ */
 bool handle_no_operand_operation(memory_word *temp, char **source_label,
                                  char **dest_label, char *line,
                                  operation_syntax syntax, int *value1) {
@@ -135,21 +258,49 @@ bool handle_no_operand_operation(memory_word *temp, char **source_label,
   // todo - error handling
   return false;
 }
+
+/*
+ * Function: is_register
+ * Checks if the given operand is a valid register.
+ *
+ * Parameters:
+ *   operand - The operand string to check.
+ *
+ * Returns:
+ *   - True if the operand represents a valid register (r0 to r7).
+ *   - False otherwise.
+ */
 bool is_register(char *operand) {
   if (*operand == REGISTER_INDICATOR) {
     const int register_number = *(operand + 1) - '0';
     if (register_number < 0 || register_number > REGISTER_COUNT) {
-      // not a register, might be a label starting with r like "r8" or "right"
+      /* not a register, might be a label starting with r like "r8" or "right"*/
       return false;
     }
     if (is_whitespace(operand + 2)) {
       return true;
     }
-    // might be a label like "r3d" which is valid
+    /*might be a label like "r3d" which is valid*/
     return false;
   }
   return false;
 }
+
+/*
+ * Function: extract_operand
+ * Extracts an operand from a given string and stores it in the temporary memory word.
+ *
+ * Parameters:
+ *   operand - The operand string to extract.
+ *   temp - The temporary memory word array to store the extracted operand.
+ *   operand_label - The label associated with the operand (if any).
+ *   operand_number - The operand number (0 or 1).
+ *   type - The operand type (source or destination).
+ *   relative - A flag indicating if the operand is relative.
+ *
+ * Returns:
+ *   - The number of operands extracted (1 or 0).
+ */
 int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
                     char **operand_label, int operand_number, enum op_type type,
                     bool *relative) {
@@ -186,7 +337,7 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
     }
     return 0;
   }
-  // label operand
+  /* label operand*/
   if (*operand == RELATIVE_INDICATOR) {
     *relative = true;
     if (type == DEST) {
@@ -223,10 +374,26 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
   }
   return 1;
 }
+
+/*
+ * Function: parse_operation
+ * Parses an operation line to extract the operation type and its operands.
+ *
+ * Parameters:
+ *   work_line - The line to parse.
+ *   line_number - The current line number in the source file.
+ *   temp - The temporary memory word array to store parsed data.
+ *   errors - The current error status.
+ *   source_label - Pointer to store the source operand label.
+ *   dest_label - Pointer to store the destination operand label.
+ *
+ * Returns:
+ *   - The number of words parsed.
+ */
 int parse_operation(char **work_line, int line_number,
                     memory_word temp[MAX_OPERATION_LEN], enum errors *errors,
                     char **source_label, char **dest_label) {
-  // this should parse the entire line, finding the operation and its operands
+  /* this should parse the entire line, finding the operation and its operands*/
   int i;
   int word_count = 1;
   char *line = *work_line;
@@ -250,8 +417,7 @@ int parse_operation(char **work_line, int line_number,
                                     syntax, &word_count) == true)
       return word_count; // todo error handling
   } else if (is_empty(syntax.source_type)) {
-    // one operand of a type from dest_type from found syntax, line should be
-    // the operand with spaces
+    /*one operand of a type from dest_type from found syntax, line should be the operand with spaces*/
     IGNORE_WHITESPACE(line);
     if (*line == '\0') {
       MISSING_OPERAND(line_number);
@@ -315,6 +481,22 @@ int parse_operation(char **work_line, int line_number,
 
   return word_count;
 }
+
+/**
+ * Function: handle_operation
+ * Handles the parsing and processing of an operation line in the assembly code.
+ *
+ * Parameters:
+ *   work_line - The line containing the operation to parse.
+ *   status - Pointer to the current status of the assembler.
+ *   table - Pointer to the label table.
+ *   line_number - The current line number.
+ *   code_image - The memory image for the code.
+ *   IC - The instruction counter, which tracks the current position in the code image.
+ *
+ * Returns:
+ *   - The size of the operation parsed.
+ */
 int handle_operation(char **work_line, enum errors *status, table_head *table,
                      int line_number, memory code_image, const int IC) {
   int i;
@@ -336,6 +518,14 @@ int handle_operation(char **work_line, enum errors *status, table_head *table,
   }
   return op_size;
 }
+
+/**
+ * Function: first_pass
+ * Performs the first pass of the assembler by reading the input file and processing each line.
+ *
+ * Parameters:
+ *   file_name - The name of the input file to assemble.
+ */
 void first_pass(const char *file_name) {
   int IC = 100, DC = 0;
   static memory data_image;
