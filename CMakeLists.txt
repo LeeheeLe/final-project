@@ -16,12 +16,11 @@ add_executable(final_project
         "Header files/first_pass.h"
         "Header files/file_extensions.h"
         "source files/label_table.c"
-        "Header files/label_table.h"
         "source files/parsing.c"
         "Header files/parsing.h"
         "source files/second_pass.c"
         "source files/const_tables.c"
         "source files/intern_table.c"
-        "Header files/intern_table.h"
+        "Header files/tables.h"
         "source files/mem_image.c"
         "Header files/mem_image.h")

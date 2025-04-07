@@ -12,7 +12,7 @@ char *add_extension(char *filename, char *extension) {
     long extension_length = strlen(extension);
 
     if (extension_length < filename_length) { /* if the file name already has an extention */
-        if (strcmp(filename + filename_len - extension_len, extension) == 0) {
+        if (strcmp(filename + filename_length - extension_length, extension) == 0) {
             FILE_EXTENSION_ERROR(filename);
             return NULL;
         }

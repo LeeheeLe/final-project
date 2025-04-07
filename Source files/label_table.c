@@ -1,4 +1,4 @@
-#include "../Header files/label_table.h"
+#include "../Header files/tables.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,8 +28,8 @@
  *
  * @return table_head* A pointer to the newly initialized label table.
  */
-table_head *initialise_table() {
-  table_head *root = malloc(sizeof(table_head));
+label_table_head *initialise_label_table() {
+  label_table_head *root = malloc(sizeof(label_table_head));
   root->root = NULL;
   return root;
 }
@@ -43,7 +43,7 @@ table_head *initialise_table() {
  *
  * @return int Result of strcmp between the names of node1 and node2.
  */
-int node_cmp(label node1, label node2) {
+int node_cmp(Label_node node1, Label_node node2) {
   return strcmp(node1.name, node2.name);
 }
 
@@ -55,7 +55,7 @@ int node_cmp(label node1, label node2) {
  * @param node The label node to be added.
  * @param curr The current label node in the tree where the new node will be inserted.
  */
-void add_node(label *node, label *curr) {
+void add_label_node(Label_node *node, Label_node *curr) {
   if (curr->left == NULL && curr->right == NULL) {
     if (node_cmp(*node, *curr) >= 0) {
       curr->right = node;
@@ -69,13 +69,13 @@ void add_node(label *node, label *curr) {
       curr->right = node;
       return;
     }
-    add_node(node, curr->right);
+    add_label_node(node, curr->right);
   } else {
     if (curr->left == NULL) {
       curr->left = node;
       return;
     }
-    add_node(node, curr->left);
+    add_label_node(node, curr->left);
   }
 }
 
@@ -91,9 +91,9 @@ void add_node(label *node, label *curr) {
  * @param type The type of the label (like code or data).
  * @param linking_type The type of linking (like external or internal).
  */
-void add_label(table_head *head, const char *name, int value,
+void add_label(label_table_head *head, const char *name, int value,
                label_data_type type, linking_type linking_type) {
-  label *node = malloc(sizeof(label));
+  Label_node *node = malloc(sizeof(Label_node));
   node->name = name;
   node->value = value;
   node->type = type;
@@ -104,7 +104,7 @@ void add_label(table_head *head, const char *name, int value,
     head->root = node;
     return;
   }
-  add_node(node, head->root);
+  add_label_node(node, head->root);
 }
 
 /*
@@ -116,7 +116,7 @@ void add_label(table_head *head, const char *name, int value,
  *
  * @return label* A pointer to the label node if found, NULL otherwise.
  */
-label *find_node(const char *name, label *node) {
+Label_node *find_node(const char *name, Label_node *node) {
   if (node == NULL) {
     return node;
   }
@@ -140,6 +140,6 @@ label *find_node(const char *name, label *node) {
  *
  * @return label* A pointer to the label node if found, NULL otherwise.
  */
-label *find_label(const char *name, table_head head) {
+Label_node *find_label(const char *name, label_table_head head) {
   return find_node(name, head.root);
 }
