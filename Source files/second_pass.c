@@ -2,7 +2,7 @@
 #include "../Header files/second_pass.h"
 #include "../Header files/errors.h"
 #include "../Header files/input.h"
-#include "../Header files/label_table.h"
+#include "../Header files/tables.h"
 #include <stdio.h>
 #include "../Header files/parsing.h"
 
