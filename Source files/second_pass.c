@@ -1,97 +1,80 @@
-#include <string.h>
 #include "../Header files/second_pass.h"
 #include "../Header files/errors.h"
 #include "../Header files/input.h"
-#include "../Header files/label_table.h"
-#include <stdio.h>
 #include "../Header files/parsing.h"
+#include "Header files/mem_image.h"
+#include "Header files/tables.h"
 
-char *add_extension(char *filename, char *extension) {
-    char *new_filename;
-    long filename_length = strlen(filename);
-    long extension_length = strlen(extension);
+#include <stdio.h>
+#include <string.h>
 
-    if (extension_length < filename_length) { /* if the file name already has an extention */
-        if (strcmp(filename + filename_length - extension_length, extension) == 0) {
-            FILE_EXTENSION_ERROR(filename);
-            return NULL;
-        }
-    }
-    new_filename = (char *)malloc(sizeof(filename_length + extension_length + 1));
-    if (new_filename == NULL)  /*memory allocation failed */
-		MEM_ALOC_ERROR();
-        exit(1);
-
-    strcpy(new_filename, filename);
-    strcat(new_filename, extension);
-    return new_filename;
+char *add_extension(const char *file_name, const char *new_extension) {
+  char *new_str;
+  new_str = malloc(strlen(file_name) + strlen(new_extension) + 1);
+  if (new_str == NULL) {
+    MEM_ALOC_ERROR();
+    return NULL;
+  }
+  strcpy(new_str, file_name);
+  strcat(new_str, new_extension);
+  return new_str;
 }
 
-char *change_extension(char *file_name, char *new_extension); //TODO; implement
+void create_ob_file(char *file_ob_name, memory *code, memory *data, int ICF,
+                    int DCF) {
+  FILE *file_ob = fopen(file_ob_name, "w");
+  int i = 0, j = 0;
+  if (file_ob == NULL) {
+    FILE_OPEN_ERROR();
+    free_all_memory(); // TODO: implement
+    exit(1);
+  }
 
-void create_ob_file(char *file_ob_name, unsigned short *code, unsigned short *data, int *IC, int *DC) {
-    FILE *file_ob = fopen(file_ob_name,"w");
-    int i = 0, j = 0;
+  fprintf(file_ob, "\t%d %d\t\n", ICF, DCF); /* header */
 
-    if (file_ob == NULL) {
-        FILE_OPEN_ERROR();
-        free_all_memory(); //TODO: implement
-        exit(1);
-    }
-
-    fprintf(file_ob,"  %d %d\n",*IC,*DC);  /* header */
-
-    for (i ; i< *IC; i++) {    /* machine code */
-        fprintf(file_ob,"%07d %06x\n",i+START_ADDRESS,code[i]);
-    }
-    for (j ; j< *DC; j++) {
-        fprintf(file_ob,"%07d %06x\n",j+i+START_ADDRESS,data[j]);
-    }
-
-    fclose(file_ob);
+  for (i = START_ADDRESS; i < ICF; i++) { /* machine code */
+    fprintf(file_ob, "%07d %06x\n", i, code[i]->data.value);
+  }
+  for (j = 0; j < DCF; j++) {
+    fprintf(file_ob, "%07d %06x\n", j + ICF, data[j]->data.value);
+  }
+  fclose(file_ob);
 }
 
-void create_entry_file(char *file_entry_name) {
-    FILE *file_entry = fopen(file_ent_name,"w");
-    label *current;
-
-    if (file_entry == NULL) {
-        FILE_OPEN_ERROR();
-        free_all_memory(); //TODO: implement
-        exit(1);
-    }
-
-    current = table_head;
-    while (current != NULL) {
-        if (current->label_data_type == ENTRY) {
-            fprintf(file_entry,"%s %07d\n", /*lable name and label adress)*/;
-        }
-        current = current->next; //I implemented like linked list and not like the binary tree,
-                                 // TODO: fix and combine with interns
-    }
-    fclose(file_ent);
+void create_entry_file(const char *file_name, label_table_head *root) {
+  char *entries_file_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
+  if (entries_file_name == NULL) {
+    free(entries_file_name);
+    MEM_ALOC_ERROR();
+    exit(1);
+  }
+  FILE *file_entry = fopen(entries_file_name, "w");
+  free(entries_file_name);
+  if (file_entry == NULL) {
+    FILE_OPEN_ERROR();
+    exit(1);
+  }
+  //todo: go over entry list (not yet implemented) and search for every label in it for its value and print it
+  fclose(file_entry);
 }
 
-void create_ext_file(char *file_ext_name) {
-    FILE *file_ext = fopen(file_ext_name,"w");
-    label *current;
-
-    if (file_ext == NULL) {
-        FILE_OPEN_ERROR();
-        free_all_memory();
-        exit(1);
-    }
-
-    current = label_head();
-    while (current != NULL) {
-        if (current->type == EXTERN && current->adress == CODE) {
-            fprintf(file_ext,"%s %06d\n",current->name,current->address);
-        }
-        current = current->next;
-    }
-    fclose(file_ext);
+void create_ext_file(const char *file_name, label_table_head *root) {
+  char *externals_file_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
+  if (externals_file_name == NULL) {
+    free(externals_file_name);
+    MEM_ALOC_ERROR();
+    exit(1);
+  }
+  FILE *file_externals = fopen(externals_file_name, "r");
+  free(externals_file_name);
+  if (file_externals == NULL) {
+    FILE_OPEN_ERROR();
+    exit(1);
+  }
+  /*todo: implement within the internals logic an extern list with all places that use an extern label
+   * go over said table here and print it out*/
+  fclose(file_externals);
 }
-
 
 /*algorithm:
  * 1. read next line from file. if end of file go to 7
@@ -102,8 +85,8 @@ void create_ext_file(char *file_ext_name) {
  * table, error)
  * 6. complete the binary coding of the operands,  בהתאם לשיטות מיעון שבשימוש.
  *      for every operand that has a label, find it's value in the label table
- * (error if not in the table) if label is marked as external, add the address of
- * מילת המידע הרלוונטית לרשימת מילות מידע שמתייחסות לסמל חיצוני. go back to 1
+ * (error if not in the table) if label is marked as external, add the address
+ * of מילת המידע הרלוונטית לרשימת מילות מידע שמתייחסות לסמל חיצוני. go back to 1
  * 7. we have read the entire source code. if found errors stop here
  * 8. build output files*/
 
