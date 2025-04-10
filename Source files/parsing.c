@@ -179,17 +179,17 @@ char *parse_string(char *line, int line_number, enum errors *status) {
 /*
  * Parses an extern label from the given line.
  *
- * This function extracts an external label from the line, which consists of alphanumeric
+ * This function extracts a label from the line, which consists of alphanumeric
  * characters, and ensures that it doesn't exceed a predefined length. It returns the
  * label name, or NULL if there is an error (like extra characters or missing label).
  *
- * @param line The line from which to extract the extern label.
+ * @param line The line from which to extract the linking label.
  * @param line_number The line number for error handling.
  * @param status Pointer to the status of the parsing process (either success or error).
  *
- * @return char* Returns the extern label, or NULL if there was an error.
+ * @return char* Returns the linking label, or NULL if there was an error.
  */
-char *parse_extern(char *line, int line_number, enum errors *status) {
+char *parse_linking_instruction(char *line, int line_number, enum errors *status) {
   char *work_line = line;
   while (isspace(*work_line)) {
     work_line++;

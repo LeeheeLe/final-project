@@ -201,8 +201,12 @@ void handle_instruction(int DC, memory *data_image, enum errors *status,
       LABELED_LINKING_WARNING(line_number);
     }
     if (instruction_type == EXTERN_INST) {
-      *label_name = parse_extern(work_line, line_number, status);
+      *label_name = parse_linking_instruction(work_line, line_number, status);
       add_label(table, *label_name, DEFAULT_EXTERN_VALUE, EXTERNAL, EXTERN);
+    }
+    if (instruction_type == ENTRY_INST) {
+      *label_name = parse_linking_instruction(work_line, line_number, status);
+      //todo: add label name to entry list
     }
   }
 }
