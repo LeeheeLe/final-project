@@ -5,13 +5,11 @@
  */
 
 #include "../Header files/first_pass.h"
-#include "../Header files/label_table.h"
+#include "../Header files/const_tables.h"
 #include "../Header files/mem_image.h"
 #include "../Header files/parsing.h"
-#include "../Header files/const_tables.h"
+#include "Header files/tables.h"
 /*todo: divide this huge file to mini files according to similar tasks*/
-/* Function to duplicate a string.*/
-extern char *str_dup(const char *src);
 
 #define MAX_OPERATION_LEN 3         /* Maximum length of an operation.*/
 #define IMMEDIATE_PARAM_INDICATOR '#'  /*Indicator for immediate parameter.*/
@@ -76,7 +74,7 @@ int is_linking_instruction(inst instruction_type) {
  * Side Effects:
  *   - Sets the status to ERROR if a conflict is found.
  */
-void check_label_conflicts(enum errors *status, const table_head *table,
+void check_label_conflicts(enum errors *status, const label_table_head *table,
                            char *label_name, const int line_number) {
   if (find_label(label_name, *table) != NULL) {
     CONFLICTING_LABELS(line_number, label_name);
@@ -189,7 +187,7 @@ void handle_data_instruction(int *DC, memory data_image, enum errors *status,
  *   label_flag - Indicates whether a label is present.
  */
 void handle_instruction(int DC, memory *data_image, enum errors *status,
-                        table_head *table, char *work_line, char **label_name,
+                        label_table_head *table, char *work_line, char **label_name,
                         inst instruction_type, int line_number,
                         int label_flag) {
   if (is_data_instruction(instruction_type)) {
@@ -497,7 +495,7 @@ int parse_operation(char **work_line, int line_number,
  * Returns:
  *   - The size of the operation parsed.
  */
-int handle_operation(char **work_line, enum errors *status, table_head *table,
+int handle_operation(char **work_line, enum errors *status, label_table_head *table,
                      int line_number, memory code_image, const int IC) {
   int i;
   static memory_word temp[MAX_OPERATION_LEN];
@@ -532,7 +530,7 @@ void first_pass(const char *file_name) {
   static memory code_image;
   char *input_file;
   enum errors status = NORMAL;
-  table_head *table = initialise_table();
+  label_table_head *table = initialise_label_table();
   input_file = malloc(strlen(file_name) + strlen(ASSEMBLER_INPUT_EXT) + 1);
   if (input_file == NULL) {
     MEM_ALOC_ERROR();
