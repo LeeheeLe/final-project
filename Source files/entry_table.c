@@ -38,7 +38,7 @@ void add_new_entry(entry_table_head *head, const char *name, int mem_place) {
 }
 
 
-void free_list(Entry_node* head) {
+void free_entry_list(Entry_node* head) {
   Entry_node* current = head;
   Entry_node* next_entry;
 

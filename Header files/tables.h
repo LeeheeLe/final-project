@@ -87,6 +87,12 @@ typedef struct {
  * @return a pointer to the table
  */
 intern_table_head *initialise_intern_table();
+Intern_node* add_intern(char* name, intern_type type, int mem_place, Intern_node table);
+void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type);
+void free_intern_list(Intern_node* head);
+intern_table_head *initialise_intern_table();
+int check_interns_in_labels(intern_table_head *intern_head, label_table_head *label_head);
+
 
 
 typedef struct entry {
@@ -102,7 +108,7 @@ typedef struct {
 Entry_node* add_entry(char* name, int mem_place, Entry_node table);
 void add_entry_node(Entry_node *node, Entry_node *curr);
 void add_new_entry(entry_table_head *head, const char *name, int mem_place);
-void free_list(Entry_node* head);
+void free_entry_list(Entry_node* head);
 void iterate_entry(entry_table_head *entry_head);
 
 #endif /*TABLES_H*/

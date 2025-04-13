@@ -55,10 +55,9 @@ void add_intern_node(Intern_node *node, Intern_node *curr) {
 }
 
 
-void add_new_intern(intern_table_head *head, const char *name, int mem_place,
-               intern_type type) {
+void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type) {
   Intern_node *node = malloc(sizeof(Intern_node));
-  node->name = name;
+  node->name = strdup(name);
   node->mem_place = mem_place;
   node->type = type;
   node->next_intern = NULL;
@@ -79,7 +78,7 @@ void add_new_intern(intern_table_head *head, const char *name, int mem_place,
  * memory allocated for each interned label. It ensures that all memory used
  * by the interned labels is properly released when no longer needed.
  */
-void free_list(Intern_node* head) {
+void free_intern_list(Intern_node* head) {
   Intern_node* current = head;  /* Start from the head of the linked list. */
   Intern_node* next_intern;
 

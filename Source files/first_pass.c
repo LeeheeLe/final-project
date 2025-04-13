@@ -74,9 +74,9 @@ int is_linking_instruction(inst instruction_type) {
  * Side Effects:
  *   - Sets the status to ERROR if a conflict is found.
  */
-void check_label_conflicts(enum errors *status, const label_table_head *table,
+void check_label_conflicts(enum errors *status, label_table_head *label_table,
                            char *label_name, const int line_number) {
-  if (find_label(label_name, *table) != NULL) {
+  if (find_label(label_name, *label_table) != NULL) {
     CONFLICTING_LABELS(line_number, label_name);
     *status = ERROR;
   }
@@ -432,6 +432,7 @@ int parse_operation(char **work_line, int line_number,
     temp->operation.funct = syntax.funct;
     word_count += extract_operand(line, temp, dest_label, 1, DEST, &relative);
     if (dest_label != NULL) {
+
       /*todo add intern with relative and code/data label based on the
        * operation and check if the operand type is valid for the given syntax*/
     }
@@ -501,7 +502,7 @@ int parse_operation(char **work_line, int line_number,
  * Returns:
  *   - The size of the operation parsed.
  */
-int handle_operation(char **work_line, enum errors *status, label_table_head *table,
+int handle_operation(char **work_line, enum errors *status, intern_table_head *table,
                      int line_number, memory code_image, const int IC) {
   int i;
   static memory_word temp[MAX_OPERATION_LEN];
@@ -512,10 +513,12 @@ int handle_operation(char **work_line, enum errors *status, label_table_head *ta
   int op_size = parse_operation(work_line, line_number, temp, status,
                                 &source_label, &dest_label);
   if (source_label != NULL) {
-    // todo add intern with IC+1
+
+    add_new_intern(table,intern_name, IC+1);
+    // todo add intern with IC+1 - what type?
   }
   if (dest_label != NULL) {
-    // todo add intern with IC+op_size-1
+    // todo add intern with IC+op_size-1 - what type?
   }
   for (i = 0; i < op_size; i++) {
     code_image[IC + i] = temp[i];
@@ -536,7 +539,7 @@ void first_pass(const char *file_name) {
   static memory code_image;
   char *input_file;
   enum errors status = NORMAL;
-  label_table_head *table = initialise_label_table();
+  intern_table_head *table = initialise_intern_table();
   input_file = malloc(strlen(file_name) + strlen(ASSEMBLER_INPUT_EXT) + 1);
   if (input_file == NULL) {
     MEM_ALOC_ERROR();
@@ -551,7 +554,7 @@ void first_pass(const char *file_name) {
     FILE_OPEN_ERROR();
     return;
   }
-  char *line, *work_line, *label_name;
+  char *line, *work_line, *intern_name;
   inst instruction_type;
   int line_number = 0;
   int label_flag;
@@ -561,23 +564,23 @@ void first_pass(const char *file_name) {
     if (is_whitespace(line) || is_comment(line)) {
       continue;
     }
-    if (is_label(&work_line, &label_name)) {
+    if (is_label(&work_line, &intern_name)) {
       label_flag = 1;
-      check_label_conflicts(&status, table, label_name, line_number);
+      check_label_conflicts(&status, table, intern_name, line_number);
     }
     if (is_instruction(&work_line, &instruction_type, line_number)) {
       if (instruction_type == INVALID_INST) {
         continue;
       }
       handle_instruction(DC, &data_image, &status, table, work_line,
-                         &label_name, instruction_type, line_number,
+                         &intern_name, instruction_type, line_number,
                          label_flag);
       continue;
     }
     /*the line is an operation line, work_line is pointing to the start of the
      * operation or to a whitespace before it*/
     if (label_flag) {
-      add_label(table, label_name, IC, CODE, DEFAULT);
+      add_label(table, intern_name, IC, CODE, DEFAULT);
     }
     IC += handle_operation(&work_line, &status, table, line_number, code_image,
                            IC);
