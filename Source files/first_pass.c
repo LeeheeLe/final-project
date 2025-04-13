@@ -206,6 +206,8 @@ void handle_instruction(int DC, memory *data_image, enum errors *status,
     }
     if (instruction_type == ENTRY_INST) {
       *label_name = parse_linking_instruction(work_line, line_number, status);
+      add_new_entry(table, *label_name, mem);
+      //todo: what is the name od the mem_place var?
       //todo: add label name to entry list
     }
   }

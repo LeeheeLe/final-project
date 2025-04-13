@@ -26,6 +26,36 @@ typedef struct {
     Label_node *root;
 } label_table_head;
 
+/**
+ * @brief Initialises an empty table and allocates it dynamically
+ *
+ * @return a pointer to the table
+ */
+label_table_head *initialise_label_table();
+
+/**
+ * @brief Adds a label to the table assuming that the label name is not taken
+ *
+ * @param head the table to add the label to
+ * @param name the name of the label
+ * @param value the value of the label
+ * @param type the type of label (DATA/CODE)
+ * @param linking_type the linking type of the label (DEFAULT/EXTERN)
+ */
+void add_label(label_table_head *head, const char *name, int value,
+               label_data_type type, linking_type linking_type);
+
+/**
+ * @brief Searches the table for a label matching the name provided
+ *
+ * @param name the name of the label to search for
+ * @param head the table to search in
+ *
+ * @return a pointer to the label object containing the name and value of the label found
+ *  or null if no matching label was found
+ */
+Label_node *find_label(const char *name, label_table_head head);
+
 
 /**
  * Title: Enum definition for intern types (code or data).
@@ -51,15 +81,6 @@ typedef struct {
     Intern_node *root;
 } intern_table_head;
 
-
-
-/**
- * @brief Initialises an empty table and allocates it dynamically
- *
- * @return a pointer to the table
- */
-label_table_head *initialise_label_table();
-
 /**
  * @brief Initialises an empty table and allocates it dynamically
  *
@@ -67,27 +88,21 @@ label_table_head *initialise_label_table();
  */
 intern_table_head *initialise_intern_table();
 
-/**
- * @brief Adds a label to the table assuming that the label name is not taken
- *
- * @param head the table to add the label to
- * @param name the name of the label
- * @param value the value of the label
- * @param type the type of label (DATA/CODE)
- * @param linking_type the linking type of the label (DEFAULT/EXTERN)
- */
-void add_label(label_table_head *head, const char *name, int value,
-               label_data_type type, linking_type linking_type);
 
-/**
- * @brief Searches the table for a label matching the name provided
- *
- * @param name the name of the label to search for
- * @param head the table to search in
- *
- * @return a pointer to the label object containing the name and value of the label found
- *  or null if no matching label was found
- */
-Label_node *find_label(const char *name, label_table_head head);
+typedef struct entry {
+  char *name;
+  int mem_place;
+  struct entry *next_entry;
+} Entry_node;
+
+typedef struct {
+  Entry_node *root;
+} entry_table_head;
+
+Entry_node* add_entry(char* name, int mem_place, Entry_node table);
+void add_entry_node(Entry_node *node, Entry_node *curr);
+void add_new_entry(entry_table_head *head, const char *name, int mem_place);
+void free_list(Entry_node* head);
+void iterate_entry(entry_table_head *entry_head);
 
 #endif /*TABLES_H*/
