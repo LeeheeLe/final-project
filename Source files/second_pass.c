@@ -20,8 +20,8 @@ char *add_extension(const char *file_name, const char *new_extension) {
   return new_str;
 }
 
-void create_ob_file(char *file_ob_name, memory *code, memory *data, int ICF,
-                    int DCF) {
+void create_ob_file(const char *file_ob_name, const memory *code,
+                    const memory *data, const int ICF, const int DCF) {
   FILE *file_ob = fopen(file_ob_name, "w");
   int i = 0, j = 0;
   if (file_ob == NULL) {
@@ -54,12 +54,14 @@ void create_entry_file(const char *file_name, label_table_head *root) {
     FILE_OPEN_ERROR();
     exit(1);
   }
-  //todo: go over entry list (not yet implemented) and search for every label in it for its value and print it
+  // todo: go over entry list (not yet implemented) and search for every label
+  // in it for its value and print it
   fclose(file_entry);
 }
 
 void create_ext_file(const char *file_name, label_table_head *root) {
-  char *externals_file_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
+  char *externals_file_name =
+      add_extension(file_name, EXTERNALS_FILE_EXTENTION);
   if (externals_file_name == NULL) {
     free(externals_file_name);
     MEM_ALOC_ERROR();
@@ -71,8 +73,8 @@ void create_ext_file(const char *file_name, label_table_head *root) {
     FILE_OPEN_ERROR();
     exit(1);
   }
-  /*todo: implement within the internals logic an extern list with all places that use an extern label
-   * go over said table here and print it out*/
+  /*todo: implement within the internals logic an extern list with all places
+   * that use an extern label go over said table here and print it out*/
   fclose(file_externals);
 }
 
@@ -81,10 +83,10 @@ void create_ext_file(const char *file_name, label_table_head *root) {
  * 2. if the first field in the row is a label, skip it
  * 3. if is it .data, .string or .extern, go to 1
  * 4. is it .entry? if not, go to 6
- * 5. add 'entry' in label table to the to the label (if label is not in the
+ * 5. add 'entry' in label table to the label (if label is not in the
  * table, error)
  * 6. complete the binary coding of the operands,  בהתאם לשיטות מיעון שבשימוש.
- *      for every operand that has a label, find it's value in the label table
+ *      for every operand that has a label, find its value in the label table
  * (error if not in the table) if label is marked as external, add the address
  * of מילת המידע הרלוונטית לרשימת מילות מידע שמתייחסות לסמל חיצוני. go back to 1
  * 7. we have read the entire source code. if found errors stop here
