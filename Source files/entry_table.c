@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-Entry_node *add_entry(char* name, Entry_node table) {
-  Entry_node* new_entry = (Entry_node*)malloc(sizeof(Intern_node));  /* Allocate memory for the new entry label. */
+entry_node *add_entry(const char * name, entry_node table) {
+  entry_node* new_entry = (entry_node*)malloc(sizeof(entry_node));  /* Allocate memory for the new entry label. */
   if (!new_entry) {
     MEM_ALOC_ERROR();
     return NULL;
@@ -16,7 +16,7 @@ Entry_node *add_entry(char* name, Entry_node table) {
 }
 
 
-void add_entry_node(Entry_node *node, Entry_node *curr) {
+void add_entry_node(entry_node *node, entry_node *curr) {
     while (curr->next_entry != NULL) {
         curr = curr->next_entry;
     }
@@ -25,7 +25,7 @@ void add_entry_node(Entry_node *node, Entry_node *curr) {
 
 
 void add_new_entry(entry_table_head *head, const char *name) {
-  Entry_node *node = malloc(sizeof(Entry_node));
+  entry_node *node = malloc(sizeof(entry_node));
   node->name = strdup(name);
   node->next_entry = NULL;
   if (head->root == NULL) {
@@ -36,9 +36,9 @@ void add_new_entry(entry_table_head *head, const char *name) {
 }
 
 
-void free_entry_list(Entry_node* head) {
-  Entry_node* current = head;
-  Entry_node* next_entry;
+void free_entry_list(entry_node* head) {
+  entry_node* current = head;
+  entry_node* next_entry;
 
   while (current != NULL) {
     next_entry = current->next_entry;

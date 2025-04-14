@@ -98,7 +98,8 @@ typedef struct {
   entry_node *root;
 } entry_table_head;
 
-entry_node *add_entry(char *name, entry_node table);
+entry_table_head *initialise_entry_table();
+entry_node *add_entry(const char *name, entry_node table);
 void add_entry_node(entry_node *node, entry_node *curr);
 void add_new_entry(entry_table_head *head, const char *name);
 void free_entry_list(entry_node *head);

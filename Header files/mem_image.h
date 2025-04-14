@@ -4,28 +4,29 @@
 #define MAX_MEM_SIZE 1<<10
 typedef unsigned int uint;
 
+
 typedef struct {
-  uint opcode : 6;
-  uint source_type : 2; // todo make an enum
-  uint source_reg : 3;
-  uint dest_type : 2; // todo make enum
-  uint dest_reg : 3;
-  uint funct : 5;
-  uint A : 1;
-  uint R : 1;
   uint E : 1;
+  uint R : 1;
+  uint A : 1;
+  uint funct : 5;
+  uint dest_reg : 3;
+  uint dest_type : 2; // todo make enum
+  uint source_reg : 3;
+  uint source_type : 2; // todo make an enum
+  uint opcode : 6;
 } operation;
 
 typedef struct {
-  int value : 21;
-  uint A : 1;
-  uint R : 1;
   uint E : 1;
+  uint R : 1;
+  uint A : 1;
+  uint value : 21;
 } operand;
 
 
 typedef struct {
-  int value : 24;
+  uint value : 24;
 } data;
 
 typedef struct {

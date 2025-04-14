@@ -1,64 +1,41 @@
 #include "../Header files/second_pass.h"
-#include "../Header files/errors.h"
-#include "../Header files/input.h"
-#include "../Header files/parsing.h"
-#include "../Header files/tables.h"
-#include "Header files/mem_image.h"
-#include <stdio.h>
-#include <string.h>
 
-char *add_extension(const char *filename, const char *extension) {
-  char *new_filename;
-  const int filename_length = (int) strlen(filename);
-  const int extension_length = (int) strlen(extension);
 
-  new_filename = (char *)malloc(filename_length + extension_length + 1);
-  if (new_filename == NULL) {
-    /*memory allocation failed */
-    // todo: free all
-    MEM_ALOC_ERROR();
-    exit(1);
-  }
-
-  strcpy(new_filename, filename);
-  strcat(new_filename, extension);
-  return new_filename;
-}
 
 void create_ob_file(const char *file_name, const memory *code,
-                    const memory *data, const int ICF, const int DCF) {
+                    const memory *data, int ICF, const int DCF) {
   char *file_ob_name = add_extension(file_name, OBJECT_FILE_EXTENTION);
   FILE *file_ob = fopen(file_ob_name, "w");
   free(file_ob_name);
   int i = 0, j = 0;
 
   if (file_ob == NULL) {
-    free(file_ob_name);
     FILE_OPEN_ERROR();
-    free_all_memory(); // TODO: implement
+    /*free_all_memory(); // TODO: implement*/
     exit(1);
   }
 
-  fprintf(file_ob, "  %d %d\n", ICF, DCF); /* header */
+  fprintf(file_ob, "  %d %d\n", ICF-START_ADDRESS, DCF); /* header */
 
   for (i = 0; i + START_ADDRESS < ICF; i++) { /* machine code */
-    fprintf(file_ob, "%07d %06x\n", i + START_ADDRESS, code[i+START_ADDRESS]->data.value);
+    fprintf(file_ob, "%07d %06x\n", i + START_ADDRESS, (*code)[i+START_ADDRESS].data.value);
   }
-  for (j = 0; j + ICF < DCF; j++) {
-    fprintf(file_ob, "%07d %06x\n", j + ICF, data[j]->data.value);
+  for (j = 0; j < DCF; j++) {
+    fprintf(file_ob, "%07d %06x\n", j + ICF, (*data)[j].data.value);
   }
-
   fclose(file_ob);
 }
 
-void create_entry_file(char *file_name, label_table_head label_table, entry_table_head entry_table) {
+void create_entry_file(const char *file_name,
+                       const label_table_head label_table,
+                       const entry_table_head entry_table, const int ICF) {
   char *file_ent_name = add_extension(file_name, ENTRIES_FILE_EXTENTION);
   FILE *file_entry = fopen(file_ent_name, "w");
   free(file_ent_name);
 
   if (file_entry == NULL) {
     FILE_OPEN_ERROR();
-    free_all_memory(); // TODO: implement
+    /*free_all_memory(); // TODO: implement*/
     exit(1);
   }
 
@@ -73,21 +50,23 @@ void create_entry_file(char *file_name, label_table_head label_table, entry_tabl
       if (found_label->value == DEFAULT_EXTERN_VALUE) {
         //todo: throw error extern cannot be intern too
       }
-      fprintf(file_entry, "%s %7d", current->name, found_label->value);
+      fprintf(file_entry, "%s %7d\n", current->name, (found_label->type == DATA) ? found_label->value + ICF : found_label->value);
     }
     current = current->next_entry;
   }
   fclose(file_entry);
 }
 
-void populate_labels(char *file_name, memory *code,label_table_head label_table, intern_table_head intern_table) {
+void populate_labels(const char *file_name, memory *code,
+                     const label_table_head label_table,
+                     const intern_table_head intern_table, const int ICF) {
   char *file_ext_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
   FILE *file_extern = fopen(file_ext_name, "w");
   free(file_ext_name);
 
   if (file_extern == NULL) {
     FILE_OPEN_ERROR();
-    free_all_memory(); // TODO: implement
+    /*free_all_memory(); // TODO: implement*/
     exit(1);
   }
 
@@ -98,23 +77,26 @@ void populate_labels(char *file_name, memory *code,label_table_head label_table,
       //todo: throw error label used but not declared
     } else {
       if (current->type == immediate) {
-        code[current->mem_place]->operand.value = found_label->value;
+        int value = found_label->value;
+        value = (found_label->type==DATA) ? value + ICF : value;
+        (*code)[current->mem_place].operand.value = value;
         if (found_label->linking_type == EXTERN) {
-          code[current->mem_place]->operand.E = 1;
-          code[current->mem_place]->operand.value = 0;
-          fprintf(file_ext, "%s %7d", current->name, current->mem_place);
+          (*code)[current->mem_place].operand.E = 1;
+          (*code)[current->mem_place].operand.value = 0;
+          fprintf(file_extern, "%s %7d\n", current->name, current->mem_place);
         } else {
-          code[current->mem_place]->operand.R = 1;
+          (*code)[current->mem_place].operand.R = 1;
         }
       } else if (current->type == relative) {
         if (found_label->linking_type == EXTERN) {
           //todo: throw error cannot use extern label as relative param
         } else {
-          code[current->mem_place]->operand.A = 1;
-          code[current->mem_place]->operand.value = found_label->value-current->mem_place;
+          (*code)[current->mem_place].operand.A = 1;
+          (*code)[current->mem_place].operand.value = found_label->value-current->mem_place+1;
         }
       }
     }
+    current = current->next_intern;
   }
   fclose(file_extern);
 

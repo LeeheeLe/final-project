@@ -8,4 +8,6 @@
 /*get line (arbitrary length) from file, returns a pointer to the start of the line*/
 char *getLine(FILE *input);
 
+char *add_extension(const char *filename, const char *extension);
+
 #endif /*INPUT_H*/

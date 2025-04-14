@@ -9,6 +9,8 @@
 #include "../Header files/mem_image.h"
 #include "../Header files/parsing.h"
 #include "../Header files/tables.h"
+
+#include <Header files/second_pass.h>
 /*todo: divide this huge file to mini files according to similar tasks*/
 
 #define MAX_OPERATION_LEN 3         /* Maximum length of an operation.*/
@@ -137,11 +139,12 @@ int handle_numbers(char *line, int line_number, enum errors *status,
 void write_str(memory data_image, int DC, char *str) {
   int i = 0;
   while (*str != '\0') {
+    data_image[DC + i].data.value = 0; /*zero out noise*/
     data_image[DC + i].character.value = *str;
     i++;
     str++;
   }
-  data_image[DC + i].character.value = '\0';
+  data_image[DC + i].data.value = 0;
 }
 
 /*
@@ -186,15 +189,15 @@ void handle_data_instruction(int *DC, memory data_image, enum errors *status,
  *   line_number - The current line number.
  *   label_flag - Indicates whether a label is present.
  */
-void handle_instruction(int DC, memory *data_image, enum errors *status,
+void handle_instruction(int *DC, memory *data_image, enum errors *status,
                         label_table_head *label_table, entry_table_head *entry_table, char *work_line, char **label_name,
                         inst instruction_type, int line_number,
                         int label_flag) {
   if (is_data_instruction(instruction_type)) {
     if (label_flag) {
-      add_label(label_table, *label_name, DC, DATA, DEFAULT);
+      add_label(label_table, *label_name, *DC, DATA, DEFAULT);
     }
-    handle_data_instruction(&DC, *data_image, status, work_line,
+    handle_data_instruction(DC, *data_image, status, work_line,
                             instruction_type, line_number);
   } else if (is_linking_instruction(instruction_type)) {
     if (label_flag) {
@@ -254,6 +257,7 @@ bool handle_no_operand_operation(memory_word *temp, char **source_label,
     *dest_label = NULL;
     temp->data.value = 0;
     temp->operation.opcode = syntax.opcode;
+    temp->operation.A = 1;
     *value1 = 1;
     return true;
   }
@@ -536,19 +540,17 @@ int handle_operation(char **work_line, enum errors *status, intern_table_head *t
  */
 void first_pass(const char *file_name) {
   int IC = 100, DC = 0;
-  static memory data_image;
-  static memory code_image;
-  char *input_file;
+  char *input_file = add_extension(file_name, ASSEMBLER_INPUT_EXT);
   enum errors status = NORMAL;
-  intern_table_head *table = initialise_intern_table();
-  input_file = malloc(strlen(file_name) + strlen(ASSEMBLER_INPUT_EXT) + 1);
-  if (input_file == NULL) {
-    MEM_ALOC_ERROR();
-    free(input_file);
-    return;
-  }
-  strcpy(input_file, file_name);
-  strcat(input_file, ASSEMBLER_INPUT_EXT);
+
+  /*these need to get to the second pass*/
+  memory data_image;
+  memory code_image;
+  label_table_head *label_table = initialise_label_table();
+  entry_table_head *entry_table = initialise_entry_table();
+  intern_table_head *intern_table = initialise_intern_table();
+  /*up to here need to get to the second pass*/
+
   FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
   free(input_file);
   if (input == NULL) {
@@ -567,13 +569,13 @@ void first_pass(const char *file_name) {
     }
     if (is_label(&work_line, &intern_name)) {
       label_flag = 1;
-      check_label_conflicts(&status, table, intern_name, line_number);
+      check_label_conflicts(&status, label_table, intern_name, line_number);
     }
     if (is_instruction(&work_line, &instruction_type, line_number)) {
       if (instruction_type == INVALID_INST) {
         continue;
       }
-      handle_instruction(DC, &data_image, &status, table, work_line,
+      handle_instruction(&DC, &data_image, &status, label_table, entry_table, work_line,
                          &intern_name, instruction_type, line_number,
                          label_flag);
       continue;
@@ -581,10 +583,14 @@ void first_pass(const char *file_name) {
     /*the line is an operation line, work_line is pointing to the start of the
      * operation or to a whitespace before it*/
     if (label_flag) {
-      add_label(table, intern_name, IC, CODE, DEFAULT);
+      add_label(label_table, intern_name, IC, CODE, DEFAULT);
     }
-    IC += handle_operation(&work_line, &status, table, line_number, code_image,
+    IC += handle_operation(&work_line, &status, intern_table, line_number, code_image,
                            IC);
     free(line);
   }
+
+  populate_labels(file_name, &code_image, *label_table, *intern_table, IC);
+  create_entry_file(file_name, *label_table, *entry_table, IC);
+  create_ob_file(file_name, &code_image, &data_image, IC, DC);
 }

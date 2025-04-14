@@ -1,5 +1,6 @@
 #include "../Header files/input.h"
 #include "../Header files/errors.h"
+#include <string.h>
 
 /*
  * Function: getLine
@@ -73,4 +74,22 @@ char *getLine(FILE *input) {
     /* Null-terminate the string */
     line[current_idx] = '\0';
     return line;  /* Return the complete line */
+}
+
+char *add_extension(const char *filename, const char *extension) {
+    char *new_filename;
+    const int filename_length = (int) strlen(filename);
+    const int extension_length = (int) strlen(extension);
+
+    new_filename = (char *)malloc(filename_length + extension_length + 1);
+    if (new_filename == NULL) {
+        /*memory allocation failed */
+        // todo: free all
+        MEM_ALOC_ERROR();
+        exit(1);
+    }
+
+    strcpy(new_filename, filename);
+    strcat(new_filename, extension);
+    return new_filename;
 }
