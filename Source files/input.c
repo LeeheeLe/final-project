@@ -1,5 +1,6 @@
 #include "../Header files/input.h"
 #include "../Header files/errors.h"
+#include "../Header files/memory_utility.h"
 #include <string.h>
 
 /*
@@ -84,7 +85,7 @@ char *add_extension(const char *filename, const char *extension) {
     new_filename = (char *)malloc(filename_length + extension_length + 1);
     if (new_filename == NULL) {
         /*memory allocation failed */
-        // todo: free all
+        free_all_memory();
         MEM_ALOC_ERROR();
         exit(1);
     }

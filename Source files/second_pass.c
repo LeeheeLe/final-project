@@ -1,4 +1,6 @@
 #include "../Header files/second_pass.h"
+#include "../Header files/memory_utility.h"
+
 
 void create_ob_file(const char *file_name, const memory *code,
                     const memory *data, int ICF, const int DCF) {
@@ -9,7 +11,7 @@ void create_ob_file(const char *file_name, const memory *code,
 
   if (file_ob == NULL) {
     FILE_OPEN_ERROR();
-    /*free_all_memory(); // TODO: implement*/
+    free_all_memory();
     exit(1);
   }
 
@@ -33,7 +35,7 @@ void create_entry_file(const char *file_name,
 
   if (file_entry == NULL) {
     FILE_OPEN_ERROR();
-    /*free_all_memory(); // TODO: implement*/
+    free_all_memory();
     exit(1);
   }
 
@@ -64,7 +66,7 @@ void populate_labels(const char *file_name, memory *code,
 
   if (file_extern == NULL) {
     FILE_OPEN_ERROR();
-    /*free_all_memory(); // TODO: implement*/
+    free_all_memory();
     exit(1);
   }
 
