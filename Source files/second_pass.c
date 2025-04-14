@@ -25,8 +25,8 @@ char *add_extension(const char *filename, const char *extension) {
   return new_filename;
 }
 
-void create_ob_file(char *file_name, memory *code,
-                    memory *data, int *IC, int *DC) {
+void create_ob_file(const char *file_name, const memory *code,
+                    const memory *data, const int ICF, const int DCF) {
   char *file_ob_name = add_extension(file_name, OBJECT_FILE_EXTENTION);
   FILE *file_ob = fopen(file_ob_name, "w");
   free(file_ob_name);
@@ -39,13 +39,13 @@ void create_ob_file(char *file_name, memory *code,
     exit(1);
   }
 
-  fprintf(file_ob, "  %d %d\n", *IC, *DC); /* header */
+  fprintf(file_ob, "  %d %d\n", ICF, DCF); /* header */
 
-  for (i = 0; i < *IC; i++) { /* machine code */
+  for (i = 0; i + START_ADDRESS < ICF; i++) { /* machine code */
     fprintf(file_ob, "%07d %06x\n", i + START_ADDRESS, code[i+START_ADDRESS]->data.value);
   }
-  for (j = 0; j < *DC; j++) {
-    fprintf(file_ob, "%07d %06x\n", j + i + START_ADDRESS, data[j]->data.value);
+  for (j = 0; j + ICF < DCF; j++) {
+    fprintf(file_ob, "%07d %06x\n", j + ICF, data[j]->data.value);
   }
 
   fclose(file_ob);
