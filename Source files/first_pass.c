@@ -187,12 +187,12 @@ void handle_data_instruction(int *DC, memory data_image, enum errors *status,
  *   label_flag - Indicates whether a label is present.
  */
 void handle_instruction(int DC, memory *data_image, enum errors *status,
-                        label_table_head *table, char *work_line, char **label_name,
+                        label_table_head *label_table, entry_table_head *entry_table, char *work_line, char **label_name,
                         inst instruction_type, int line_number,
                         int label_flag) {
   if (is_data_instruction(instruction_type)) {
     if (label_flag) {
-      add_label(table, *label_name, DC, DATA, DEFAULT);
+      add_label(label_table, *label_name, DC, DATA, DEFAULT);
     }
     handle_data_instruction(&DC, *data_image, status, work_line,
                             instruction_type, line_number);
@@ -202,13 +202,11 @@ void handle_instruction(int DC, memory *data_image, enum errors *status,
     }
     if (instruction_type == EXTERN_INST) {
       *label_name = parse_linking_instruction(work_line, line_number, status);
-      add_label(table, *label_name, DEFAULT_EXTERN_VALUE, EXTERNAL, EXTERN);
+      add_label(label_table, *label_name, DEFAULT_EXTERN_VALUE, EXTERNAL, EXTERN);
     }
     if (instruction_type == ENTRY_INST) {
       *label_name = parse_linking_instruction(work_line, line_number, status);
-      add_new_entry(table, *label_name, mem);
-      //todo: what is the name od the mem_place var?
-      //todo: add label name to entry list
+      add_new_entry(entry_table, *label_name);
     }
   }
 }
@@ -431,11 +429,6 @@ int parse_operation(char **work_line, int line_number,
     temp->operation.opcode = syntax.opcode;
     temp->operation.funct = syntax.funct;
     word_count += extract_operand(line, temp, dest_label, 1, DEST, &relative);
-    if (dest_label != NULL) {
-
-      /*todo add intern with relative and code/data label based on the
-       * operation and check if the operand type is valid for the given syntax*/
-    }
   } else if (!is_empty(syntax.destination_type) &&
              !is_empty(syntax.source_type)) {
     temp->operation.opcode = syntax.opcode;
@@ -509,16 +502,24 @@ int handle_operation(char **work_line, enum errors *status, intern_table_head *t
   for (i = 0; i < MAX_OPERATION_LEN; i++) {
     temp[i].data.value = 0;
   }
+  /*set A to 1 for the first word of the operation*/
+  temp->operation.A = 1;
   char *source_label, *dest_label;
   int op_size = parse_operation(work_line, line_number, temp, status,
                                 &source_label, &dest_label);
   if (source_label != NULL) {
-
-    add_new_intern(table,intern_name, IC+1);
-    // todo add intern with IC+1 - what type?
+    if (temp->operation.source_type == 1) {
+      add_new_intern(table,source_label, IC+1, immediate);
+    } else if (temp->operation.source_type == 2) {
+      add_new_intern(table,source_label, IC+1, relative);
+    }
   }
   if (dest_label != NULL) {
-    // todo add intern with IC+op_size-1 - what type?
+    if (temp->operation.dest_type == 1) {
+      add_new_intern(table,dest_label, IC+op_size-1, immediate);
+    } else if (temp->operation.dest_type == 2) {
+      add_new_intern(table,dest_label, IC+op_size-1, relative);
+    }
   }
   for (i = 0; i < op_size; i++) {
     code_image[IC + i] = temp[i];
