@@ -33,8 +33,8 @@
  * the newly created interned label.
  */
 
-Intern_node* add_intern(char* name, intern_type type, int mem_place, Intern_node table) {
-  Intern_node* new_intern = (Intern_node*)malloc(sizeof(Intern_node));  /* Allocate memory for the new interned label. */
+intern_node* add_intern(char* name, intern_type type, int mem_place, intern_node table) {
+  intern_node* new_intern = (intern_node*)malloc(sizeof(intern_node));  /* Allocate memory for the new interned label. */
   if (!new_intern) {
     MEM_ALOC_ERROR();
     return NULL;
@@ -47,7 +47,7 @@ Intern_node* add_intern(char* name, intern_type type, int mem_place, Intern_node
 }
 
 
-void add_intern_node(Intern_node *node, Intern_node *curr) {
+void add_intern_node(intern_node *node, intern_node *curr) {
     while (curr->next_intern != NULL) {
         curr = curr->next_intern;
     }
@@ -56,7 +56,7 @@ void add_intern_node(Intern_node *node, Intern_node *curr) {
 
 
 void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type) {
-  Intern_node *node = malloc(sizeof(Intern_node));
+  intern_node *node = malloc(sizeof(intern_node));
   node->name = strdup(name);
   node->mem_place = mem_place;
   node->type = type;
@@ -78,9 +78,9 @@ void add_new_intern(intern_table_head *head, const char *name, int mem_place,int
  * memory allocated for each interned label. It ensures that all memory used
  * by the interned labels is properly released when no longer needed.
  */
-void free_intern_list(Intern_node* head) {
-  Intern_node* current = head;  /* Start from the head of the linked list. */
-  Intern_node* next_intern;
+void free_intern_list(intern_node* head) {
+  intern_node* current = head;  /* Start from the head of the linked list. */
+  intern_node* next_intern;
 
   while (current != NULL) {  /* Traverse the linked list. */
     next_intern = current->next_intern;  /* Save the pointer to the next interned label. */
@@ -110,11 +110,11 @@ intern_table_head *initialise_intern_table() {
  * @return 1 if at least one intern is found in the label table, 0 otherwise.
  */
 int check_interns_in_labels(intern_table_head *intern_head, label_table_head *label_head) {
-    Intern_node *current = intern_head->root;
+    intern_node *current = intern_head->root;
     int found_interns = 0;
 
     while (current != NULL) {
-        Label_node *label = find_label(current->name, *label_head);
+        label_node *label = find_label(current->name, *label_head);
         if (label != NULL) {
             found_interns = 1;
         } else {

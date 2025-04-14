@@ -5,25 +5,21 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-typedef enum {
-    DATA, CODE, EXTERNAL
-  } label_data_type;
+typedef enum { DATA, CODE, EXTERNAL } label_data_type;
 
-typedef enum {
-    DEFAULT, EXTERN
-  } linking_type;
+typedef enum { DEFAULT, EXTERN } linking_type;
 
-typedef struct node{
-    const char *name;
-    int value;
-    label_data_type type;
-    linking_type linking_type;
-    struct node *right;
-    struct node *left;
-} Label_node /*label is a node*/;
+typedef struct node {
+  const char *name;
+  int value;
+  label_data_type type;
+  linking_type linking_type;
+  struct node *right;
+  struct node *left;
+} label_node /*label is a node*/;
 
 typedef struct {
-    Label_node *root;
+  label_node *root;
 } label_table_head;
 
 /**
@@ -51,34 +47,31 @@ void add_label(label_table_head *head, const char *name, int value,
  * @param name the name of the label to search for
  * @param head the table to search in
  *
- * @return a pointer to the label object containing the name and value of the label found
- *  or null if no matching label was found
+ * @return a pointer to the label object containing the name and value of the
+ * label found or null if no matching label was found
  */
-Label_node *find_label(const char *name, label_table_head head);
-
+label_node *find_label(const char *name, label_table_head head);
 
 /**
- * Title: Enum definition for intern types (code or data).
+ * Title: Enum definition for intern types (immediate or relative).
  *
  * Purpose:
  * This enum is used to define the type of an interned label. It indicates
- * whether the interned label is part of the code section or the data section
- * in the assembler's memory.
+ * whether the interned label should be inserted with an immediate reference or
+ * a relative one in the assembler's memory.
  */
 
-typedef enum {
-    code, data
-} intern_type;
+typedef enum { immediate, relative } intern_type;
 
 typedef struct intern {
-    char *name;
-    intern_type type;
-    int mem_place;
-    struct intern *next_intern;
-} Intern_node;
+  char *name;
+  intern_type type;
+  int mem_place;
+  struct intern *next_intern;
+} intern_node;
 
 typedef struct {
-    Intern_node *root;
+  intern_node *root;
 } intern_table_head;
 
 /**
@@ -87,28 +80,28 @@ typedef struct {
  * @return a pointer to the table
  */
 intern_table_head *initialise_intern_table();
-Intern_node* add_intern(char* name, intern_type type, int mem_place, Intern_node table);
-void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type);
-void free_intern_list(Intern_node* head);
+intern_node *add_intern(char *name, intern_type type, int mem_place,
+                        intern_node table);
+void add_new_intern(intern_table_head *head, const char *name, int mem_place,
+                    intern_type type);
+void free_intern_list(intern_node *head);
 intern_table_head *initialise_intern_table();
-int check_interns_in_labels(intern_table_head *intern_head, label_table_head *label_head);
-
-
+int check_interns_in_labels(intern_table_head *intern_head,
+                            label_table_head *label_head);
 
 typedef struct entry {
   char *name;
-  int mem_place;
   struct entry *next_entry;
-} Entry_node;
+} entry_node;
 
 typedef struct {
-  Entry_node *root;
+  entry_node *root;
 } entry_table_head;
 
-Entry_node* add_entry(char* name, int mem_place, Entry_node table);
-void add_entry_node(Entry_node *node, Entry_node *curr);
-void add_new_entry(entry_table_head *head, const char *name, int mem_place);
-void free_entry_list(Entry_node* head);
+entry_node *add_entry(char *name, entry_node table);
+void add_entry_node(entry_node *node, entry_node *curr);
+void add_new_entry(entry_table_head *head, const char *name);
+void free_entry_list(entry_node *head);
 void iterate_entry(entry_table_head *entry_head);
 
 #endif /*TABLES_H*/

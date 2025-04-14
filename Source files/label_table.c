@@ -43,7 +43,7 @@ label_table_head *initialise_label_table() {
  *
  * @return int Result of strcmp between the names of node1 and node2.
  */
-int node_cmp(Label_node node1, Label_node node2) {
+int node_cmp(label_node node1, label_node node2) {
   return strcmp(node1.name, node2.name);
 }
 
@@ -55,7 +55,7 @@ int node_cmp(Label_node node1, Label_node node2) {
  * @param node The label node to be added.
  * @param curr The current label node in the tree where the new node will be inserted.
  */
-void add_label_node(Label_node *node, Label_node *curr) {
+void add_label_node(label_node *node, label_node *curr) {
   if (curr->left == NULL && curr->right == NULL) {
     if (node_cmp(*node, *curr) >= 0) {
       curr->right = node;
@@ -93,7 +93,7 @@ void add_label_node(Label_node *node, Label_node *curr) {
  */
 void add_label(label_table_head *head, const char *name, int value,
                label_data_type type, linking_type linking_type) {
-  Label_node *node = malloc(sizeof(Label_node));
+  label_node *node = malloc(sizeof(label_node));
   node->name = name;
   node->value = value;
   node->type = type;
@@ -116,7 +116,7 @@ void add_label(label_table_head *head, const char *name, int value,
  *
  * @return label* A pointer to the label node if found, NULL otherwise.
  */
-Label_node *find_node(const char *name, Label_node *node) {
+label_node *find_node(const char *name, label_node *node) {
   if (node == NULL) {
     return node;
   }
@@ -140,6 +140,6 @@ Label_node *find_node(const char *name, Label_node *node) {
  *
  * @return label* A pointer to the label node if found, NULL otherwise.
  */
-Label_node *find_label(const char *name, label_table_head head) {
+label_node *find_label(const char *name, label_table_head head) {
   return find_node(name, head.root);
 }
