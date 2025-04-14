@@ -22,5 +22,4 @@ add_executable(final_project
         "source files/const_tables.c"
         "source files/intern_table.c"
         "Header files/tables.h"
-        "source files/mem_image.c"
         "Header files/mem_image.h")
