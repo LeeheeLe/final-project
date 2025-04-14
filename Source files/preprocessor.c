@@ -13,11 +13,11 @@
  *
  * Returns: A pointer to the macro table.
  */
-struct macro_table *preprocess(const char *file_name) {
+struct Macro_table *preprocess(const char *file_name) {
     int macro_idx, line_number = -1;
     enum errors ecode = NORMAL;
-    struct macro_table *curr_macro, *head_macro;
-    head_macro = malloc(sizeof(struct  macro_table));
+    struct Macro_table *curr_macro, *head_macro;
+    head_macro = malloc(sizeof(struct Macro_table));
     char *input_file, *output_file;
     curr_macro = head_macro;
 
@@ -89,19 +89,19 @@ struct macro_table *preprocess(const char *file_name) {
  *
  * This function will append a line to the macro's list of lines.
  */
-void append_line_to_macro(char *line, struct macro_table *curr_macro) {
+void append_line_to_macro(char *line, struct Macro_table *curr_macro) {
     if (curr_macro->first_line == NULL) {
-        curr_macro->first_line = malloc(sizeof(struct line));
+        curr_macro->first_line = malloc(sizeof(struct Macro_line));
         curr_macro->first_line->line = NULL;
         curr_macro->first_line->next_line = NULL;
         if (curr_macro->first_line == NULL) MEM_ALOC_ERROR();
     }
 
-    struct line *curr_line = curr_macro->first_line;
+    struct Macro_line *curr_line = curr_macro->first_line;
     while (curr_line->next_line != NULL) {
         curr_line = curr_line->next_line;
     }
-    curr_line->next_line = malloc(sizeof(struct line));
+    curr_line->next_line = malloc(sizeof(struct Macro_line));
     curr_line->next_line->line = NULL;
     curr_line->next_line->next_line = NULL;
     curr_line->line = line;
@@ -115,10 +115,10 @@ void append_line_to_macro(char *line, struct macro_table *curr_macro) {
  *
  * This function writes all the lines of a macro to the provided output file.
  */
-void print_macro_contents_to_file(const int macro_idx, struct macro_table *head_macro, FILE *output) {
+void print_macro_contents_to_file(const int macro_idx, struct Macro_table *head_macro, FILE *output) {
     int idx;
-    struct macro_table curr_macro = *head_macro;
-    struct line curr_line;
+    struct Macro_table curr_macro = *head_macro;
+    struct Macro_line curr_line;
 
     for (idx = 0; idx < macro_idx; idx++) {
         curr_macro = *curr_macro.next_macro;
@@ -179,17 +179,6 @@ int mcro_end(const char *line, enum errors *ecode, const int line_number) {
 }
 
 /*
- * reserved_names - A list of reserved names in the assembly language.
- *
- * These reserved names cannot be used as macro names, labels, or instructions.
- */
-char *reserved_names[28] = {
-    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
-    "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
-    "jsr", "red", "prn", "rts", "stop", ".data", ".string", ".entry", ".extern"
-};
-
-/*
  * is_reserved_name - Checks if a given macro name is reserved.
  * @mcro_name: The macro name to check.
  *
@@ -218,7 +207,7 @@ int is_reserved_name(char *mcro_name) {
  * This function extracts a macro name from the given line and inserts it
  * into the macro table. If the macro name is reserved, an error is thrown.
  */
-void insert_macro_name(const char *line, struct macro_table *curr_macro, enum errors *ecode, int line_number) {
+void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum errors *ecode, int line_number) {
     int i, j;
     char *macro_name = malloc(strlen(line) * sizeof(char));
 
@@ -258,10 +247,10 @@ void insert_macro_name(const char *line, struct macro_table *curr_macro, enum er
  * any previously defined macro in the macro table.
  * Returns: The index of the macro if found, -1 otherwise.
  */
-int is_saved_macro(const char *line, struct macro_table *head, enum errors *ecode) {
+int is_saved_macro(const char *line, struct Macro_table *head, enum errors *ecode) {
     int i, j, k = 0;
-    struct macro_table curr = *head;
-
+    struct Macro_table curr = *head;
+//todo:delete &curr ! NULL ?
     while (&curr != NULL && curr.macro_name != NULL) {
         for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
         } /*ignore whitespace*/

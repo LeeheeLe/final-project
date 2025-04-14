@@ -80,14 +80,11 @@ typedef struct {
  * @return a pointer to the table
  */
 intern_table_head *initialise_intern_table();
-intern_node *add_intern(char *name, intern_type type, int mem_place,
-                        intern_node table);
-void add_new_intern(intern_table_head *head, const char *name, int mem_place,
-                    intern_type type);
+intern_node *add_intern(char *name, intern_type type, int mem_place,intern_node table);
+void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type);
 void free_intern_list(intern_node *head);
 intern_table_head *initialise_intern_table();
-int check_interns_in_labels(intern_table_head *intern_head,
-                            label_table_head *label_head);
+int check_interns_in_labels(intern_table_head *intern_head,label_table_head *label_head);
 
 typedef struct entry {
   char *name;

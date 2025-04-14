@@ -9,8 +9,8 @@
 #include "../Header files/mem_image.h"
 #include "../Header files/parsing.h"
 #include "../Header files/tables.h"
+#include "../Header files/second_pass.h"
 
-#include <Header files/second_pass.h>
 /*todo: divide this huge file to mini files according to similar tasks*/
 
 #define MAX_OPERATION_LEN 3         /* Maximum length of an operation.*/
