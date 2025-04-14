@@ -80,7 +80,17 @@ void create_entry_file(char *file_name, label_table_head label_table, entry_tabl
   fclose(file_entry);
 }
 
-void populate_interns(memory *code,label_table_head label_table, intern_table_head intern_table) {
+void populate_labels(char *file_name, memory *code,label_table_head label_table, intern_table_head intern_table) {
+  char *file_ext_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
+  FILE *file_extern = fopen(file_ext_name, "w");
+  free(file_ext_name);
+
+  if (file_extern == NULL) {
+    FILE_OPEN_ERROR();
+    free_all_memory(); // TODO: implement
+    exit(1);
+  }
+
   intern_node *current = intern_table.root;
   label_node *found_label;
   while (current != NULL) {
@@ -91,7 +101,8 @@ void populate_interns(memory *code,label_table_head label_table, intern_table_he
         code[current->mem_place]->operand.value = found_label->value;
         if (found_label->linking_type == EXTERN) {
           code[current->mem_place]->operand.E = 1;
-          //todo: add to extern file
+          code[current->mem_place]->operand.value = 0;
+          fprintf(file_ext, "%s %7d", current->name, current->mem_place);
         } else {
           code[current->mem_place]->operand.R = 1;
         }
@@ -105,28 +116,8 @@ void populate_interns(memory *code,label_table_head label_table, intern_table_he
       }
     }
   }
+  fclose(file_extern);
 
-}
-
-void create_ext_file(char *file_name) {
-  char *file_ext_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
-  FILE *file_extern = fopen(file_ext_name, "w");
-  free(file_ext_name);
-
-  if (file_extern == NULL) {
-    FILE_OPEN_ERROR();
-    free_all_memory(); // TODO: implement
-    exit(1);
-  }
-
-  current = label_head();
-  while (current != NULL) {
-    if (current->type == EXTERN && current->adress == CODE) {
-      fprintf(file_ext, "%s %06d\n", current->name, current->address);
-    }
-    current = current->next;
-  }
-  fclose(file_ext);
 }
 
 /*algorithm:
