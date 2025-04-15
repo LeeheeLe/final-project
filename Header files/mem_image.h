@@ -4,6 +4,12 @@
 #define MAX_MEM_SIZE 1<<10
 typedef unsigned int uint;
 
+typedef enum {
+  IMMEDIATE = 0,
+  DIRECT = 1,
+  RELATIVE = 2,
+  REGISTER = 3
+} operand_type;
 
 typedef struct {
   uint E : 1;
@@ -11,9 +17,9 @@ typedef struct {
   uint A : 1;
   uint funct : 5;
   uint dest_reg : 3;
-  uint dest_type : 2; // todo make enum
+  operand_type dest_type : 2;
   uint source_reg : 3;
-  uint source_type : 2; // todo make an enum
+  operand_type source_type : 2;
   uint opcode : 6;
 } operation;
 

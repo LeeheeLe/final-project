@@ -320,10 +320,10 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
     temp[operand_number].operand.value = strtol(operand, &endptr, 10);
     temp[operand_number].operand.A = 1;
     if (type == DEST) {
-      temp->operation.dest_type = 0;
+      temp->operation.dest_type = IMMEDIATE;
       temp->operation.dest_reg = 0;
     } else if (type == SOURCE) {
-      temp->operation.source_type = 0;
+      temp->operation.source_type = IMMEDIATE;
       temp->operation.source_reg = 0;
     }
     if (endptr == operand || !is_whitespace(endptr)) {
@@ -337,10 +337,10 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
     *operand_label = NULL;
     if (type == DEST) {
       temp->operation.dest_reg = *(operand + 1) - '0';
-      temp->operation.dest_type = 3; // todo enum instead of value
+      temp->operation.dest_type = REGISTER;
     } else if (type == SOURCE) {
       temp->operation.source_reg = *(operand + 1) - '0';
-      temp->operation.source_type = 3; // todo enum instead of value
+      temp->operation.source_type = REGISTER;
     }
     return 0;
   }
@@ -348,10 +348,10 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
   if (*operand == RELATIVE_INDICATOR) {
     *relative = true;
     if (type == DEST) {
-      temp->operation.dest_type = 2;
+      temp->operation.dest_type = RELATIVE;
       temp->operation.dest_reg = 0;
     } else if (type == SOURCE) {
-      temp->operation.source_type = 2;
+      temp->operation.source_type = RELATIVE;
       temp->operation.source_reg = 0;
     }
     *operand++;
@@ -368,10 +368,10 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
   }
   *operand_label = label;
   if (*relative == false && type == DEST) {
-    temp->operation.dest_type = 1;
+    temp->operation.dest_type = DIRECT;
     temp->operation.dest_reg = 0;
   } else if (*relative == false && type == SOURCE) {
-    temp->operation.source_type = 1;
+    temp->operation.source_type = DIRECT;
     temp->operation.source_reg = 0;
   }
   return 1;
@@ -498,16 +498,16 @@ int handle_operation(char **work_line, enum errors *status, intern_table_head *t
   int op_size = parse_operation(work_line, line_number, temp, status,
                                 &source_label, &dest_label);
   if (source_label != NULL) {
-    if (temp->operation.source_type == 1) {
+    if (temp->operation.source_type == DIRECT) {
       add_new_intern(table,source_label, IC+1, immediate);
-    } else if (temp->operation.source_type == 2) {
+    } else if (temp->operation.source_type == RELATIVE) {
       add_new_intern(table,source_label, IC+1, relative);
     }
   }
   if (dest_label != NULL) {
-    if (temp->operation.dest_type == 1) {
+    if (temp->operation.dest_type == DIRECT) {
       add_new_intern(table,dest_label, IC+op_size-1, immediate);
-    } else if (temp->operation.dest_type == 2) {
+    } else if (temp->operation.dest_type == RELATIVE) {
       add_new_intern(table,dest_label, IC+op_size-1, relative);
     }
   }
