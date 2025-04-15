@@ -30,7 +30,7 @@ typedef struct {
 int is_instruction(char **line, inst *instruction_type, int line_number);
 int is_whitespace(const char *line);
 int is_comment(const char *line);
-int is_label(char **line, char **label_name);
+int is_label(char **line, char **label_name, int line_number);
 char *parse_string(char *line, int line_number, enum errors *status);
 char *parse_linking_instruction(char *line, int line_number, enum errors *status);
 

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
+/**
  * reserved_names - A list of reserved names in the assembly language.
  *
  * These reserved names cannot be used as macro names, labels, or instructions.
@@ -93,7 +93,7 @@ struct Macro_table *preprocess(const char *file_name) {
     return head_macro;
 }
 
-/*
+/**
  * append_line_to_macro - Adds a line to a macro's content.
  * @line: The line to be added to the macro.
  * @curr_macro: The current macro to append the line to.
@@ -116,7 +116,7 @@ void append_line_to_macro(char *line, struct Macro_table *curr_macro) {
     curr_line->next_line->next_line = NULL;
 }
 
-/*
+/**
  * print_macro_contents_to_file - Writes the contents of a macro to the output file.
  * @macro_idx: The index of the macro to print.
  * @head_macro: The head of the macro table.
@@ -140,7 +140,7 @@ void print_macro_contents_to_file(const int macro_idx, struct Macro_table *head_
     }
 }
 
-/*
+/**
  * mcro_start - Checks if a line starts a macro definition.
  * @line: The line to check.
  *
@@ -159,7 +159,7 @@ int mcro_start(const char *line) {
     return 0;
 }
 
-/*
+/**
  * mcro_end - Checks if a line ends a macro definition.
  * @line: The line to check.
  * @ecode: The error code pointer for handling errors.
@@ -187,7 +187,7 @@ int mcro_end(const char *line, enum errors *ecode, const int line_number) {
     return 0;
 }
 
-/*
+/**
  * is_reserved_name - Checks if a given macro name is reserved.
  * @mcro_name: The macro name to check.
  *
@@ -206,7 +206,7 @@ int is_reserved_name(char *mcro_name) {
     return 0; /*valid macro name*/
 }
 
-/*
+/**
  * insert_macro_name - Inserts a new macro name into the macro table.
  * @line: The line containing the macro name.
  * @curr_macro: The current macro being processed.
@@ -246,8 +246,7 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
     EXTRA_CHARS_MACRO_ERROR(line_number);
 }
 
-/*
- * is_saved_macro - Checks if the given line matches any saved macro.
+/** is_saved_macro - Checks if the given line matches any saved macro.
  * @line: The line to check.
  * @head: The head of the macro table.
  * @ecode: The error code pointer for handling errors.
@@ -256,7 +255,7 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
  * any previously defined macro in the macro table.
  * Returns: The index of the macro if found, -1 otherwise.
  */
-int is_saved_macro(const char *line, struct Macro_table *head, enum errors *ecode) {
+int is_saved_macro(const char *line, struct Macro_table *head) {
     int i, j, k = 0;
     struct Macro_table *curr = head;
     while (curr != NULL && curr->macro_name != NULL) {

@@ -10,8 +10,8 @@
 #include "../Header files/parsing.h"
 #include "../Header files/second_pass.h"
 #include "../Header files/tables.h"
-
 #include "../Header Files/memory_utility.h"
+#include "../Header files/preprocessor.h"
 
 /*todo: divide this huge file to mini files according to similar tasks*/
 
@@ -485,8 +485,9 @@ int parse_operation(char **work_line, int line_number,
  * Returns:
  *   - The size of the operation parsed.
  */
-int handle_operation(char **work_line, enum errors *status, intern_table_head *table,
-                     int line_number, memory code_image, const int IC) {
+int handle_operation(char **work_line, enum errors *status,
+                     intern_table_head *table, int line_number,
+                     memory code_image, const int IC) {
   int i;
   static memory_word temp[MAX_OPERATION_LEN];
   for (i = 0; i < MAX_OPERATION_LEN; i++) {
@@ -499,16 +500,16 @@ int handle_operation(char **work_line, enum errors *status, intern_table_head *t
                                 &source_label, &dest_label);
   if (source_label != NULL) {
     if (temp->operation.source_type == DIRECT) {
-      add_new_intern(table,source_label, IC+1, immediate);
+      add_new_intern(table, source_label, IC + 1, immediate);
     } else if (temp->operation.source_type == RELATIVE) {
-      add_new_intern(table,source_label, IC+1, relative);
+      add_new_intern(table, source_label, IC + 1, relative);
     }
   }
   if (dest_label != NULL) {
     if (temp->operation.dest_type == DIRECT) {
-      add_new_intern(table,dest_label, IC+op_size-1, immediate);
+      add_new_intern(table, dest_label, IC + op_size - 1, immediate);
     } else if (temp->operation.dest_type == RELATIVE) {
-      add_new_intern(table,dest_label, IC+op_size-1, relative);
+      add_new_intern(table, dest_label, IC + op_size - 1, relative);
     }
   }
   for (i = 0; i < op_size; i++) {
@@ -517,14 +518,22 @@ int handle_operation(char **work_line, enum errors *status, intern_table_head *t
   return op_size;
 }
 
+void check_macro_conflicts(enum errors * errors, struct Macro_table * macro_table, char * intern_name,
+                          int line_number) {
+  if (is_saved_macro(intern_name, macro_table) != -1) {
+    LABEL_MACRO_CONFLICT(intern_name, line_number);
+    *errors = ERROR;
+  }
+}
 /**
  * Function: first_pass
- * Performs the first pass of the assembler by reading the input file and processing each line.
+ * Performs the first pass of the assembler by reading the input file and
+ * processing each line.
  *
  * Parameters:
  *   file_name - The name of the input file to assemble.
  */
-void first_pass(const char *file_name) {
+void first_pass(const char *file_name, struct Macro_table *macro_table) {
   int IC = 100, DC = 0;
   char *input_file = add_extension(file_name, ASSEMBLER_INPUT_EXT);
   enum errors status = NORMAL;
@@ -553,9 +562,10 @@ void first_pass(const char *file_name) {
     if (is_whitespace(line) || is_comment(line)) {
       continue;
     }
-    if (is_label(&work_line, &intern_name)) {
+    if (is_label(&work_line, &intern_name, line_number)) {
       label_flag = 1;
       check_label_conflicts(&status, label_table, intern_name, line_number);
+      check_macro_conflicts(&status, macro_table, intern_name, line_number);
     }
     if (is_instruction(&work_line, &instruction_type, line_number)) {
       if (instruction_type == INVALID_INST) {
@@ -575,8 +585,9 @@ void first_pass(const char *file_name) {
                            IC);
     free_ptr(line);
   }
-
-  populate_labels(file_name, &code_image, *label_table, *intern_table, IC);
-  create_entry_file(file_name, *label_table, *entry_table, IC);
-  create_ob_file(file_name, &code_image, &data_image, IC, DC);
+  if (status == NORMAL) {
+    populate_labels(file_name, &code_image, *label_table, *intern_table, IC);
+    create_entry_file(file_name, *label_table, *entry_table, IC);
+    create_ob_file(file_name, &code_image, &data_image, IC, DC);
+  }
 }

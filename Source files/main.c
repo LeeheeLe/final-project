@@ -38,9 +38,9 @@ int main(const int argc, char *argv[]) {
   for (i = 1; i < argc; i++) {
     struct Macro_table *macros = preprocess(argv[i]); /* Call the preprocess function on the file */
     if (macros == NULL){
-
+      continue;
     }
-    first_pass(argv[i]); /* Call the first pass assembler on the file */
+    first_pass(argv[i], macros); /* Call the first pass assembler on the file */
     free_all_memory();
   }
   return 0; /* Return success code */
