@@ -1,11 +1,33 @@
 #ifndef FILE_EXTENSIONS_H
 #define FILE_EXTENSIONS_H
 
-#define PREPROCESSOR_INPUT_EXT ".as"
-#define PREPROCESSOR_OUTPUT_EXT ".am"
+/*
+ * File: file_extensions.h
+ * -----------------------
+ * This header defines constants for the various file extensions used
+ * throughout the assembler process. These macros ensure consistent
+ * naming of input, intermediate, and output files during all stages
+ * of assembly.
+ *
+ * Extensions are used for:
+ *  - Preprocessor input and output
+ *  - Final object code
+ *  - External references
+ *  - Entry point labels
+ */
 
-#define OBJECT_FILE_EXTENTION ".ob"
-#define EXTERNALS_FILE_EXTENTION ".ext"
-#define ENTRIES_FILE_EXTENTION ".ent"
+/*
+ * Preprocessor file extensions
+ * Used before and after macro expansion.
+ */
+#define PREPROCESSOR_INPUT_EXT ".as"  /* Original source file */
+#define PREPROCESSOR_OUTPUT_EXT ".am" /* After macro processing */
 
-#endif /*FILE_EXTENSIONS_H*/
+/*
+ * Assembler output file extensions
+ */
+#define OBJECT_FILE_EXT ".ob"    /* Final assembled machine code */
+#define EXTERNALS_FILE_EXT ".ext" /* External labels used by this file */
+#define ENTRIES_FILE_EXT ".ent"  /* Entry labels defined in this file */
+
+#endif /* FILE_EXTENSIONS_H */
