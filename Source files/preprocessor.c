@@ -1,7 +1,7 @@
 #include "../Header files/preprocessor.h"
 #include "../Header files/input.h"
-#include <Header Files/memory_utility.h>
-#include <Header files/file_extensions.h>
+#include "../Header Files/memory_utility.h"
+#include "../Header files/file_extensions.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

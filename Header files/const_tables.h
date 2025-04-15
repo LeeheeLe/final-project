@@ -1,13 +1,13 @@
 #ifndef CONST_TABLES_H
 #define CONST_TABLES_H
 
-typedef enum bool { false = 0, true = 1 } bool;
 
-struct operand_type {
-  bool IMMEDIATE;
-  bool ADDRESS;
-  bool RELATIVE;
-  bool REGISTER;
+
+struct operand_type {/**type of allowed operands for an operation**/
+  int IMMEDIATE : 1;
+  int ADDRESS : 1;
+  int RELATIVE : 1;
+  int REGISTER : 1;
 };
 
 typedef struct operation {

@@ -11,7 +11,7 @@
 #include "../Header files/second_pass.h"
 #include "../Header files/tables.h"
 
-#include <Header Files/memory_utility.h>
+#include "../Header Files/memory_utility.h"
 
 /*todo: divide this huge file to mini files according to similar tasks*/
 
@@ -226,7 +226,7 @@ void handle_instruction(int *DC, memory *data_image, enum errors *status,
  *   - 1 if the operand is empty (all fields are 0).
  *   - 0 if the operand has non-zero values.
  */
-bool is_empty(struct operand_type type) {
+int is_empty(struct operand_type type) {
   static struct operand_type empty_operand = {0, 0, 0, 0};
   return (type.ADDRESS == empty_operand.ADDRESS) &&
          (type.IMMEDIATE == empty_operand.IMMEDIATE) &&
@@ -250,7 +250,7 @@ bool is_empty(struct operand_type type) {
  *   - 1 if the operation was handled successfully.
  *   - 0 if there was an error.
  */
-bool handle_no_operand_operation(memory_word *temp, char **source_label,
+int handle_no_operand_operation(memory_word *temp, char **source_label,
                                  char **dest_label, char *line,
                                  operation_syntax syntax, int *value1) {
   if (is_whitespace(line)) {
@@ -260,10 +260,10 @@ bool handle_no_operand_operation(memory_word *temp, char **source_label,
     temp->operation.opcode = syntax.opcode;
     temp->operation.A = 1;
     *value1 = 1;
-    return true;
+    return 1;
   }
   // todo - error handling
-  return false;
+  return 0;
 }
 
 /*
@@ -277,20 +277,20 @@ bool handle_no_operand_operation(memory_word *temp, char **source_label,
  *   - True if the operand represents a valid register (r0 to r7).
  *   - False otherwise.
  */
-bool is_register(char *operand) {
+int is_register(char *operand) {
   if (*operand == REGISTER_INDICATOR) {
     const int register_number = *(operand + 1) - '0';
     if (register_number < 0 || register_number > REGISTER_COUNT) {
       /* not a register, might be a label starting with r like "r8" or "right"*/
-      return false;
+      return 0;
     }
     if (is_whitespace(operand + 2)) {
-      return true;
+      return 1;
     }
     /*might be a label like "r3d" which is valid*/
-    return false;
+    return 0;
   }
-  return false;
+  return 0;
 }
 
 /*
@@ -310,11 +310,11 @@ bool is_register(char *operand) {
  */
 int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
                     char **operand_label, int operand_number, enum op_type type,
-                    bool *relative) {
+                    int *relative) {
   char *endptr;
-  *relative = false;
+  *relative = 0;
   if (*operand == IMMEDIATE_PARAM_INDICATOR) {
-    *operand++;
+    operand++;
     *operand_label = NULL;
     temp[operand_number].data.value = 0;
     temp[operand_number].operand.value = strtol(operand, &endptr, 10);
@@ -346,7 +346,7 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
   }
   /* label operand*/
   if (*operand == RELATIVE_INDICATOR) {
-    *relative = true;
+    *relative = 1;
     if (type == DEST) {
       temp->operation.dest_type = RELATIVE;
       temp->operation.dest_reg = 0;
@@ -354,11 +354,11 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
       temp->operation.source_type = RELATIVE;
       temp->operation.source_reg = 0;
     }
-    *operand++;
+    operand++;
   }
   char *label = safe_alloc(strlen(operand) + 1);
   int i;
-  for (i = 0; true; operand++) {
+  for (i = 0; 1; operand++) {
     if (isspace(*operand) || *operand == '\0') {
       label[i] = '\0';
       break;
@@ -367,10 +367,10 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
     i++;
   }
   *operand_label = label;
-  if (*relative == false && type == DEST) {
+  if (*relative == 0 && type == DEST) {
     temp->operation.dest_type = DIRECT;
     temp->operation.dest_reg = 0;
-  } else if (*relative == false && type == SOURCE) {
+  } else if (*relative == 0 && type == SOURCE) {
     temp->operation.source_type = DIRECT;
     temp->operation.source_reg = 0;
   }
@@ -412,7 +412,7 @@ int parse_operation(char **work_line, int line_number,
   operation_syntax syntax = find_operation(copy);
   if (is_empty(syntax.source_type) && is_empty(syntax.destination_type)) {
     if (handle_no_operand_operation(temp, source_label, dest_label, line,
-                                    syntax, &word_count) == true)
+                                    syntax, &word_count) == 1)
       return word_count; // todo error handling
   } else if (is_empty(syntax.source_type)) {
     /*one operand of a type from dest_type from found syntax, line should be the operand with spaces*/
@@ -421,7 +421,7 @@ int parse_operation(char **work_line, int line_number,
       MISSING_OPERAND(line_number);
       return -1;
     }
-    bool relative = false;
+    int relative = 0;
     temp->operation.opcode = syntax.opcode;
     temp->operation.funct = syntax.funct;
     word_count += extract_operand(line, temp, dest_label, 1, DEST, &relative);
@@ -430,7 +430,7 @@ int parse_operation(char **work_line, int line_number,
     temp->operation.opcode = syntax.opcode;
     temp->operation.funct = syntax.funct;
     char *param1, *param2;
-    bool relative1, relative2;
+    int relative1, relative2;
     param1 = safe_alloc(strlen(*work_line) + 1);
     param2 = safe_alloc(strlen(*work_line) + 1);
     IGNORE_WHITESPACE(line);
