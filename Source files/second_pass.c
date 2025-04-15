@@ -29,9 +29,9 @@ void create_ob_file(const char *file_name, const memory *code,
 void create_entry_file(const char *file_name,
                        const label_table_head label_table,
                        const entry_table_head entry_table, const int ICF) {
+  int remove_entry_file = 1;
   char *file_ent_name = add_extension(file_name, ENTRIES_FILE_EXTENTION);
   FILE *file_entry = fopen(file_ent_name, "w");
-  free_ptr(file_ent_name);
 
   if (file_entry == NULL) {
     FILE_OPEN_ERROR();
@@ -50,19 +50,23 @@ void create_entry_file(const char *file_name,
       if (found_label->value == DEFAULT_EXTERN_VALUE) {
         //todo: throw error extern cannot be intern too
       }
+      remove_entry_file = 0;
       fprintf(file_entry, "%s %07d\n", current->name, (found_label->type == DATA) ? found_label->value + ICF : found_label->value);
     }
     current = current->next_entry;
   }
   fclose(file_entry);
+  if (remove_entry_file) {
+    remove(file_ent_name);
+  }
 }
 
 void populate_labels(const char *file_name, memory *code,
                      const label_table_head label_table,
                      const intern_table_head intern_table, const int ICF) {
+  int remove_extern_file = 1;
   char *file_ext_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
   FILE *file_extern = fopen(file_ext_name, "w");
-  free_ptr(file_ext_name);
 
   if (file_extern == NULL) {
     FILE_OPEN_ERROR();
@@ -83,6 +87,7 @@ void populate_labels(const char *file_name, memory *code,
         if (found_label->linking_type == EXTERN) {
           (*code)[current->mem_place].operand.E = 1;
           (*code)[current->mem_place].operand.value = 0;
+          remove_extern_file = 0;
           fprintf(file_extern, "%s %7d\n", current->name, current->mem_place);
         } else {
           (*code)[current->mem_place].operand.R = 1;
@@ -99,5 +104,7 @@ void populate_labels(const char *file_name, memory *code,
     current = current->next_intern;
   }
   fclose(file_extern);
-
+  if (remove_extern_file) {
+    remove(file_ext_name);
+  }
 }

@@ -36,6 +36,7 @@ int main(const int argc, char *argv[]) {
   int i;
   /* Loop through each command-line argument (file to process) */
   for (i = 1; i < argc; i++) {
+    printf("processing %s\n", argv[i]);
     struct Macro_table *macros = preprocess(argv[i]); /* Call the preprocess function on the file */
     if (macros == NULL){
       continue;

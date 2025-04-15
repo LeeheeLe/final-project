@@ -1,11 +1,12 @@
 #ifndef CONST_TABLES_H
 #define CONST_TABLES_H
+#include "mem_image.h"
 
 struct operand_type {/**type of allowed operands for an operation**/
-  int IMMEDIATE : 1;
-  int ADDRESS : 1;
-  int RELATIVE : 1;
-  int REGISTER : 1;
+  uint IMMEDIATE : 1;
+  uint ADDRESS : 1;
+  uint RELATIVE : 1;
+  uint REGISTER : 1;
 };
 
 typedef struct operation {

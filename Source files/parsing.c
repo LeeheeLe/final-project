@@ -90,7 +90,7 @@ int is_comment(const char *line) {
 
 int valid_label_char(char *work_line, int label_length) {
   return !isspace(*work_line) &&
-         (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR) &&
+         (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR || *work_line == '_') &&
          label_length <= MAX_LABEL_LENGTH;
 }
 /*
@@ -213,7 +213,7 @@ char *parse_linking_instruction(char *line, int line_number, enum errors *status
   if (isalpha(*work_line)) {
     char *orig_str, *str = safe_alloc(strlen(work_line) * sizeof(char) + 1);
     orig_str = str;
-    for (; *work_line != '\0' && !isspace(*work_line) && isalnum(*work_line);
+    for (; *work_line != '\0' && !isspace(*work_line) && (isalnum(*work_line) || *work_line == '_');
          work_line++) {
       *str++ = *work_line;
          }
@@ -224,7 +224,7 @@ char *parse_linking_instruction(char *line, int line_number, enum errors *status
       }
       return orig_str;
     }
-    EXTRA_CHARS_EXTERN_ERROR(line_number);
+    EXTRA_CHARS_LINKING_ERROR(line_number);
     return NULL;
   }
   return NULL;

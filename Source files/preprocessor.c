@@ -78,6 +78,13 @@ struct Macro_table *preprocess(const char *file_name) {
             continue;
         }
         if (mcro_start(line)) {
+            if (curr_macro->macro_name != NULL) {
+                curr_macro->next_macro = safe_alloc(sizeof(struct Macro_table));
+                curr_macro = curr_macro->next_macro;
+                curr_macro->first_line = NULL;
+                curr_macro->macro_name = NULL;
+                curr_macro->next_macro = NULL;
+            }
             insert_macro_name(line, curr_macro, &ecode, line_number);
             free_ptr(line);
             while ((line = getLine(input)) != NULL) {
@@ -226,7 +233,6 @@ int is_reserved_name(char *mcro_name) {
 void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum errors *ecode, int line_number) {
     int i, j;
     char *macro_name = safe_alloc(strlen(line)+1);
-
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/
     for (j = 0; *(line + i + j) == MACRO_START[j] && i < strlen(line) && j < strlen(MACRO_START); j++) {
@@ -265,15 +271,16 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
  * Returns: The index of the macro if found, -1 otherwise.
  */
 int is_saved_macro(const char *line, struct Macro_table *head) {
-    int i, j, k = 0;
+    int k = 0;
     struct Macro_table *curr = head;
-    char *orig ,*new_line = safe_alloc(strlen(line)+1);
-    orig = new_line = strcpy(new_line, line);
-    IGNORE_WHITESPACE(new_line);
-    while (isprint(*new_line) && !isspace(*new_line)) {
-        new_line++;
+    char *orig ,*temp = safe_alloc(strlen(line)+1);
+    orig = strcpy(temp, line);
+    IGNORE_WHITESPACE(orig);
+    temp = orig;
+    while (isprint(*temp) && !isspace(*temp)) {
+        temp++;
     }
-    *new_line = '\0';
+    *temp = '\0';
     while (curr != NULL && curr->macro_name != NULL) {
         if (strcmp(curr->macro_name, orig) == 0) {
             free_ptr(orig);

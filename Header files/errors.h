@@ -16,7 +16,7 @@
 #define MISSING_INSTRUCTION_PARAM(line) printf("Error in line %d: missing instruction parameter.\n", line)
 #define MISSING_STRING_INDICATOR(line) printf("Error in line %d: missing string.\n", line)
 #define EXTRA_CHARS_STRING_ERROR(line) printf("Error in line %d: extra chars after string instruction \n", line)
-#define EXTRA_CHARS_EXTERN_ERROR(line) printf("Error in line %d: extra chars after extern instruction \n", line)
+#define EXTRA_CHARS_LINKING_ERROR(line) printf("Error in line %d: extra chars after extern or entry instruction \n", line)
 #define LABEL_TOO_LONG(line) printf("Error in line %d: label too long.\n", line)
 #define MISSING_COMMA(line) printf("Error in line %d: missing comma.\n", line)
 #define MISSING_NUMBER_OR_EXTRA_COMMA(line) printf("Error in line %d: missing number or extraneous comma.\n", line)
