@@ -67,28 +67,6 @@ void add_new_intern(intern_table_head *head, const char *name, int mem_place,int
   add_intern_node(node, head->root);
 }
 
-
-
-/*
- * Title: Frees all interned labels from memory.
- *
- * Purpose:
- * This function traverses the linked list of interned labels and frees the
- * memory allocated for each interned label. It ensures that all memory used
- * by the interned labels is properly released when no longer needed.
- */
-void free_intern_list(intern_node* head) {
-  intern_node* current = head;  /* Start from the head of the linked list. */
-  intern_node* next_intern;
-
-  while (current != NULL) {  /* Traverse the linked list. */
-    next_intern = current->next_intern;  /* Save the pointer to the next interned label. */
-    free(current->name);
-    free(current);/* Free the current interned label. */
-    current = next_intern;  /* Move to the next interned label in the list. */
-  }
-}
-
 intern_table_head *initialise_intern_table() {
   intern_table_head *root = safe_alloc(sizeof(intern_table_head));
   root->root = NULL;

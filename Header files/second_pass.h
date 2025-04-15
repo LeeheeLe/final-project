@@ -9,7 +9,6 @@
 #include "mem_image.h"
 #include <stdio.h>
 #include <string.h>
-#define INPUT_EXT PREPROCESSOR_OUTPUT_EXT
 
 void populate_labels(const char *file_name, memory *code,
                      label_table_head label_table,

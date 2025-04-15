@@ -125,7 +125,7 @@ int is_label(char **line, char **label_name) {
     work_name++;
     label_length++;
   } //todo: length check for the labels and defining the max length somewhere
-  free(name);
+  free_ptr(name);
   return 0;
 }
 
@@ -169,7 +169,7 @@ char *parse_string(char *line, int line_number, enum errors *status) {
       *str = '\0';
       return orig_str;
     }
-    free(orig_str);
+    free_ptr(orig_str);
     EXTRA_CHARS_STRING_ERROR(line_number);
     return NULL;
   }

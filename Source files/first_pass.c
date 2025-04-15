@@ -172,7 +172,6 @@ void handle_data_instruction(int *DC, memory data_image, enum errors *status,
     char *str = parse_string(work_line, line_number, status);
     write_str(data_image, *DC, str);
     *DC += (int)strlen(str) + 1;
-    free(str);
   }
 }
 
@@ -539,9 +538,9 @@ void first_pass(const char *file_name) {
   /*up to here need to get to the second pass*/
 
   FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
-  free(input_file);
   if (input == NULL) {
     FILE_OPEN_ERROR();
+    free_all_memory();
     return;
   }
   char *line, *work_line, *intern_name;
@@ -574,7 +573,7 @@ void first_pass(const char *file_name) {
     }
     IC += handle_operation(&work_line, &status, intern_table, line_number, code_image,
                            IC);
-    free(line);
+    free_ptr(line);
   }
 
   populate_labels(file_name, &code_image, *label_table, *intern_table, IC);

@@ -6,7 +6,7 @@ void create_ob_file(const char *file_name, const memory *code,
                     const memory *data, int ICF, const int DCF) {
   char *file_ob_name = add_extension(file_name, OBJECT_FILE_EXTENTION);
   FILE *file_ob = fopen(file_ob_name, "w");
-  free(file_ob_name);
+  free_ptr(file_ob_name);
   int i = 0, j = 0;
 
   if (file_ob == NULL) {
@@ -31,7 +31,7 @@ void create_entry_file(const char *file_name,
                        const entry_table_head entry_table, const int ICF) {
   char *file_ent_name = add_extension(file_name, ENTRIES_FILE_EXTENTION);
   FILE *file_entry = fopen(file_ent_name, "w");
-  free(file_ent_name);
+  free_ptr(file_ent_name);
 
   if (file_entry == NULL) {
     FILE_OPEN_ERROR();
@@ -62,7 +62,7 @@ void populate_labels(const char *file_name, memory *code,
                      const intern_table_head intern_table, const int ICF) {
   char *file_ext_name = add_extension(file_name, EXTERNALS_FILE_EXTENTION);
   FILE *file_extern = fopen(file_ext_name, "w");
-  free(file_ext_name);
+  free_ptr(file_ext_name);
 
   if (file_extern == NULL) {
     FILE_OPEN_ERROR();

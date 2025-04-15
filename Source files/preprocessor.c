@@ -1,8 +1,34 @@
 #include "../Header files/preprocessor.h"
 #include "../Header files/input.h"
-#include <stdio.h>
-
 #include <Header Files/memory_utility.h>
+#include <Header files/file_extensions.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+/*
+ * reserved_names - A list of reserved names in the assembly language.
+ *
+ * These reserved names cannot be used as macro names, labels, or instructions.
+ */
+char *reserved_names[28] = {
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+    "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
+    "jsr", "red", "prn", "rts", "stop", ".data", ".string", ".entry", ".extern"
+};
+
+struct Macro_line{
+    char* line;
+    struct Macro_line *next_line;
+} Macro_line;
+
+struct Macro_table {
+    char *macro_name;
+    struct Macro_line *first_line;
+    struct Macro_table *next_macro;
+}Macro_table;
 
 /**
  * preprocess - Preprocesses a given file by expanding macros and handling
@@ -32,21 +58,15 @@ struct Macro_table *preprocess(const char *file_name) {
     head_macro->macro_name = NULL;
     head_macro->next_macro = NULL;
 
-    input_file = safe_alloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
-    output_file = safe_alloc(strlen(file_name) + strlen(OUTPUT_EXT) + 1);
-
-    input_file = strcpy(input_file, file_name);
-    output_file = strcpy(output_file, file_name);
-    strcat(input_file, INPUT_EXT);
-    strcat(output_file, OUTPUT_EXT);
+    input_file =add_extension(file_name, PREPROCESSOR_INPUT_EXT);
+    output_file = add_extension(file_name, PREPROCESSOR_OUTPUT_EXT);
 
     FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
     FILE *output = fopen(output_file, "w"); /*open output file in 'write' mode*/
-    free(input_file);
-    free(output_file);
 
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
+        free_all_memory();
         return NULL;
     }
 
@@ -72,7 +92,7 @@ struct Macro_table *preprocess(const char *file_name) {
             fputs(line, output);
             fputc('\n', output);
         }
-        free(line);
+        free_ptr(line);
     }
     fclose(input);
     fclose(output);
@@ -112,17 +132,17 @@ void append_line_to_macro(char *line, struct Macro_table *curr_macro) {
  */
 void print_macro_contents_to_file(const int macro_idx, struct Macro_table *head_macro, FILE *output) {
     int idx;
-    struct Macro_table curr_macro = *head_macro;
-    struct Macro_line curr_line;
+    struct Macro_table *curr_macro = head_macro;
+    struct Macro_line *curr_line;
 
     for (idx = 0; idx < macro_idx; idx++) {
-        curr_macro = *curr_macro.next_macro;
+        curr_macro = curr_macro->next_macro;
     }
-    curr_line = *curr_macro.first_line;
-    while (&curr_line != NULL && curr_line.line != NULL) {
-        fputs(curr_line.line, output);
+    curr_line = curr_macro->first_line;
+    while (curr_line != NULL && curr_line->line != NULL) {
+        fputs(curr_line->line, output);
         fputc('\n', output);
-        curr_line = *curr_line.next_line;
+        curr_line = curr_line->next_line;
     }
 }
 

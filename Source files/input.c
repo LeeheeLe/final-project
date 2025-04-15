@@ -41,7 +41,7 @@ char *getLine(FILE *input) {
         /* Check for error or End Of File */
         if (c == EOF) {
             if (current_idx == 0) {
-                free(line);  /* If no characters were read, free memory and return NULL */
+                free_ptr(line);  /* If no characters were read, free memory and return NULL */
                 return NULL;
             }
             break;  /* EOF reached */
@@ -56,13 +56,9 @@ char *getLine(FILE *input) {
         /* If buffer is full, allocate more memory */
         if (current_idx >= line_size) {
             line_size *= 2;  /* Double the buffer size */
-            new_line = realloc(line, line_size * sizeof(char));
-            if (new_line == NULL) {
-                free(line);
-                free(new_line);  /* If realloc fails, free memory and handle the error */
-                MEM_ALOC_ERROR();
-                return NULL;
-            }
+            new_line = safe_alloc(line_size);
+            memcpy(new_line, line, current_idx);
+            free_ptr(line);
             line = new_line;  /* Update the line pointer to the newly allocated memory */
         }
     }

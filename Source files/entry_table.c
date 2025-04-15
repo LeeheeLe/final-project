@@ -33,18 +33,6 @@ void add_new_entry(entry_table_head *head, const char *name) {
 }
 
 
-void free_entry_list(entry_node* head) {
-  entry_node* current = head;
-  entry_node* next_entry;
-
-  while (current != NULL) {
-    next_entry = current->next_entry;
-    free(current->name);
-    free(current);
-    current = next_entry;
-  }
-}
-
 entry_table_head *initialise_entry_table() {
   entry_table_head *root = safe_alloc(sizeof(entry_table_head));
   root->root = NULL;
