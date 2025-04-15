@@ -7,6 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define IGNORE_WHITESPACE(work_line)                                           \
+while (isspace(*work_line)) {                                                \
+work_line++;                                                               \
+}
+
 /**
  * reserved_names - A list of reserved names in the assembly language.
  *
@@ -41,7 +46,7 @@ struct Macro_table {
  * Returns: A pointer to the macro table.
  */
 struct Macro_table *preprocess(const char *file_name) {
-    int macro_idx, line_number = -1;
+    int macro_idx = -1, line_number = -1;
     enum errors ecode = NORMAL;
     struct Macro_table *curr_macro, *head_macro;
     head_macro = safe_alloc(sizeof(struct Macro_table));
@@ -52,7 +57,7 @@ struct Macro_table *preprocess(const char *file_name) {
     head_macro->macro_name = NULL;
     head_macro->next_macro = NULL;
 
-    input_file =add_extension(file_name, PREPROCESSOR_INPUT_EXT);
+    input_file = add_extension(file_name, PREPROCESSOR_INPUT_EXT);
     output_file = add_extension(file_name, PREPROCESSOR_OUTPUT_EXT);
 
     FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
@@ -74,11 +79,13 @@ struct Macro_table *preprocess(const char *file_name) {
         }
         if (mcro_start(line)) {
             insert_macro_name(line, curr_macro, &ecode, line_number);
+            free_ptr(line);
             while ((line = getLine(input)) != NULL) {
                 line_number++;
                 if (!mcro_end(line, &ecode, line_number)) {
                     append_line_to_macro(line, curr_macro);
                 } else {
+                    free_ptr(line);
                     break;
                 }
             }
@@ -226,11 +233,13 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
     }
     for (i = i + j; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/
-    for (j = 0; isprint(*(line + i)) && !isspace(*(line + i)) && i < strlen(line); i++) {
-        *(macro_name + j) = *(line + i);
+    j = 0 ;
+    while (isprint(*(line + i)) && !isspace(*(line + i)) && i < strlen(line)+1) {
+        macro_name[j] = line[i];
+        i++;
         j++;
     }
-
+    macro_name[j] = '\0';
     if (is_reserved_name(macro_name)) {
         *ecode = MACRO_NAME_RESERVED(line_number);
     }
@@ -258,21 +267,25 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
 int is_saved_macro(const char *line, struct Macro_table *head) {
     int i, j, k = 0;
     struct Macro_table *curr = head;
+    char *orig ,*new_line = safe_alloc(strlen(line)+1);
+    orig = new_line = strcpy(new_line, line);
+    IGNORE_WHITESPACE(new_line);
+    while (isprint(*new_line) && !isspace(*new_line)) {
+        new_line++;
+    }
+    *new_line = '\0';
     while (curr != NULL && curr->macro_name != NULL) {
-        for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
-        } /*ignore whitespace*/
-        for (j = 0; *(line + i + j) == curr->macro_name[j] && i < strlen(line) && j < strlen(curr->macro_name); j++) {
-        }
-        for (i = i + j; isspace(*(line + i)) && i < strlen(line); i++) {
-        } /*ignore whitespace*/
-        if (i == strlen(line)) {
+        if (strcmp(curr->macro_name, orig) == 0) {
+            free_ptr(orig);
             return k;
         }
         k++;
         if (curr->next_macro == NULL) {
+            free_ptr(orig);
             return -1;
         }
         curr = curr->next_macro;
     }
+    free_ptr(orig);
     return -1;
 }
