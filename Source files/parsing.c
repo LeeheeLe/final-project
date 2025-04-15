@@ -1,7 +1,10 @@
-#include <parsing.h>
-#include <errors.h>
-#include <memory_utility.h>
+#include <const_tables.h>
 #include <ctype.h>
+#include <errors.h>
+#include <handle_text.h>
+#include <memory_utility.h>
+#include <parsing.h>
+#include <utility.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -134,7 +134,7 @@ int check_interns_in_labels(intern_table_head *intern_head, label_table_head *la
         if (label != NULL) {
             found_interns = 1;
         } else {
-            NON_EXISTANT_NAME(current->name); /* missing intern */
+            NON_EXISTANT_NAME(current->name); /* missing intern todo: correct error, this one is for missing operations*/
         }
         current = current->next_intern;
     }
