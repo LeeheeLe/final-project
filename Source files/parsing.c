@@ -34,82 +34,6 @@ instruction instructions[] = {
  */
 
 /**
- * Title: Instruction Validation
- *
- * Purpose:
- * This function checks if a given line starts with a valid instruction like "data", "string", etc.
- * It skips any leading whitespace and matches the beginning of the line to one of the predefined
- * instruction names. If a valid instruction is found, it sets the instruction type.
- * If no valid instruction is found, an error is generated.
- *
- * @param line Pointer to the line being checked for a valid instruction.
- * @param instruction_type Pointer to the instruction type to set if an instruction is found.
- * @param line_number The current line number for error reporting.
- *
- * @return int Returns 1 if a valid instruction is found, 0 if no valid instruction is found.
- */
-int is_instruction(char **line, inst *instruction_type, int line_number) {
-  char *work_line = *line;
-  int i;
-  while (isspace(*work_line)) {
-    work_line++;
-  }
-  if (*work_line == INSTRUCTION_START_CHAR) {
-    work_line++;
-    for (i=0; i < NUMBER_OF_INSTRUCTION_TYPES; i++) {
-      if (strncmp(work_line, instructions[i].name, strlen(instructions[i].name)) == 0) {
-        *line = work_line + strlen(instructions[i].name);
-        *instruction_type = instructions[i].instruction;
-        return 1;
-      }
-    }
-    INVALID_INSTRUCTION(line_number);  /* Call error handler for invalid instruction.*/
-    *instruction_type = INVALID_INST;
-    return 1;
-  }
-  return 0;
-}
-
-/**
- * Title: Whitespace Check
- *
- * Purpose:
- * This function checks if a line consists only of whitespace characters or is empty.
- * It is useful for skipping over empty lines during parsing.
- *
- * @param line The line to check for whitespace.
- *
- * @return int Returns 1 if the line consists only of whitespace, 0 if it contains other characters.
- */
-int is_whitespace(const char *line) {
-  if (strlen(line) == 0) {
-    return 1;
-  }
-  while (*line != '\0' && isspace(*line)) {
-    line++;
-  }
-  return *line == '\0';
-}
-
-/**
- * Title: Comment Check
- *
- * Purpose:
- * This function checks if the given line is a comment. A line is considered a comment
- * if it starts with the semicolon character (';').
- *
- * @param line The line to check for being a comment.
- *
- * @return int Returns 1 if the line is a comment, 0 if it is not.
- */
-int is_comment(const char *line) {
-  if (*line == ';') {
-    return 1;
-  }
-  return 0;
-}
-
-/**
  * Title: Valid Label Character Check
  *
  * Purpose:
@@ -126,52 +50,6 @@ int valid_label_char(char *work_line, int label_length) {
   return !isspace(*work_line) &&
          (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR || *work_line == '_') &&
          label_length <= MAX_LABEL_LENGTH;
-}
-
-/**
- * Title: Label Check
- *
- * Purpose:
- * This function checks if a given line starts with a valid label. A valid label starts with
- * a letter and consists of alphanumeric characters or the label definition character ('_').
- * If a valid label is found, it sets the label name and returns a success status.
- *
- * @param line Pointer to the line being checked for a label.
- * @param label_name Pointer to a string where the label name will be stored if found.
- * @param line_number The current line number for error reporting.
- *
- * @return int Returns 1 if a valid label is found, 0 if no label is found.
- */
-int is_label(char **line, char **label_name, int line_number) {
-  int label_length = 0;
-  char *work_name = safe_alloc(MAX_LABEL_LENGTH + 1), *work_line = *line;
-  char *name = work_name;
-  while (isspace(*work_line)) {
-    work_line++;
-  }
-  if (isalpha(*work_line)) {
-    *work_name = *work_line;
-    work_line++;
-    work_name++;
-    label_length++;
-  } /*checks that first character is a letter*/
-  for (; valid_label_char(work_line, label_length); work_line++) {
-    if (*work_line == LABEL_DEF_CHAR) {
-      *work_name = '\0';
-      *label_name = name;
-      *line = ++work_line;
-      if (label_length > MAX_LABEL_LENGTH) {
-        LABEL_TOO_LONG(line_number);  /* Error handler for too long label.*/
-        return 0;
-      }
-      return 1;
-    }
-    *work_name = *work_line;
-    work_name++;
-    label_length++;
-  }
-  free_ptr(name);
-  return 0;
 }
 
 /**
@@ -262,4 +140,98 @@ char *parse_linking_instruction(char *line, int line_number, enum errors *status
     return NULL;
   }
   return NULL;
+}
+
+/*
+ * Function: parse_operation
+ * Purpose: Parses an operation line to extract the operation type and its operands.
+ *
+ * Parameters:
+ *   work_line - The line to parse.
+ *   line_number - The current line number in the source file.
+ *   temp - The temporary memory word array to store parsed data.
+ *   errors - The current error status.
+ *   source_label - Pointer to store the source operand label.
+ *   dest_label - Pointer to store the destination operand label.
+ *
+ * Returns:
+ *   - The number of words parsed.
+ */
+int parse_operation(char **work_line, int line_number,
+                    memory_word temp[MAX_OPERATION_LEN], enum errors *errors,
+                    char **source_label, char **dest_label) {
+  /* this should parse the entire line, finding the operation and its operands*/
+  int i;
+  int relative;
+  operation_syntax syntax;
+  char *param1, *param2;
+  int relative1, relative2;
+  int word_count = 1;
+  char *line = *work_line;
+  char *copy = safe_alloc(strlen(*work_line) + 1);
+  IGNORE_WHITESPACE(line);
+  for (i = 0; *line != '\0'; line++) {
+    if (isspace(*line)) {
+      copy[i] = '\0';
+      break;
+    }
+    copy[i] = *line;
+    i++;
+  }
+  syntax = find_operation(copy);
+  if (is_empty(syntax.source_type) && is_empty(syntax.destination_type)) {
+    if (handle_no_operand_operation(temp, source_label, dest_label, line,
+                                    syntax, &word_count) == 1)
+      return word_count; /* todo error handling*/
+  } else if (is_empty(syntax.source_type)) {
+    /*one operand of a type from dest_type from found syntax, line should be the operand with spaces*/
+    IGNORE_WHITESPACE(line);
+    if (*line == '\0') {
+      MISSING_OPERAND(line_number);
+      return -1;
+    }
+    relative = 0;
+    temp->operation.opcode = syntax.opcode;
+    temp->operation.funct = syntax.funct;
+    word_count += extract_operand(line, temp, dest_label, 1, DEST, &relative);
+  } else if (!is_empty(syntax.destination_type) &&
+             !is_empty(syntax.source_type)) {
+    temp->operation.opcode = syntax.opcode;
+    temp->operation.funct = syntax.funct;
+    param1 = safe_alloc(strlen(*work_line) + 1);
+    param2 = safe_alloc(strlen(*work_line) + 1);
+    IGNORE_WHITESPACE(line);
+    for (i = 0; *line != '\0'; line++) {
+      if (isspace(*line) || *line == OPERAND_SEPARATOR) {
+        break;
+      }
+      param1[i] = *line;
+      i++;
+    }
+    param1[i] = '\0';
+    IGNORE_WHITESPACE(line);
+    if (*line != OPERAND_SEPARATOR) {
+      MISSING_COMMA(line_number);
+      return -1;
+    }
+    line++;
+    IGNORE_WHITESPACE(line);
+    if (*line == '\0') {
+      MISSING_OPERAND(line_number);
+      return -1;
+    }
+    for (i = 0; *line != '\0'; line++) {
+      if (isspace(*line)) {
+        break;
+      }
+      param2[i] = *line;
+      i++;
+    }
+    param2[i] = '\0';
+    word_count +=
+        extract_operand(param1, temp, source_label, 1, SOURCE, &relative1);
+    word_count +=
+        extract_operand(param2, temp, dest_label, 2, DEST, &relative2);
+  }
+  return word_count;
 }

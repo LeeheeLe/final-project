@@ -103,63 +103,6 @@ extern instruction instructions[];
  */
 #define MAX_LABEL_LENGTH 32
 
-/*
- * Function: is_instruction
- * ------------------------
- * Checks if the line contains a valid instruction. It also sets the instruction
- * type and provides the line number for error reporting.
- *
- * Parameters:
- *  line              - A pointer to the line being analyzed.
- *  instruction_type  - A pointer to the variable where the instruction type will be stored.
- *  line_number       - The line number of the instruction for error reporting.
- *
- * Returns:
- *  1 if the line contains a valid instruction, 0 otherwise.
- */
-int is_instruction(char **line, inst *instruction_type, int line_number);
-
-/*
- * Function: is_whitespace
- * -----------------------
- * Checks if the line consists only of whitespace characters (spaces, tabs, etc.).
- *
- * Parameters:
- *  line - The line to check.
- *
- * Returns:
- *  1 if the line is empty or only contains whitespace, 0 otherwise.
- */
-int is_whitespace(const char *line);
-
-/*
- * Function: is_comment
- * --------------------
- * Checks if the line is a comment (starts with a comment character).
- *
- * Parameters:
- *  line - The line to check.
- *
- * Returns:
- *  1 if the line is a comment, 0 otherwise.
- */
-int is_comment(const char *line);
-
-/*
- * Function: is_label
- * ------------------
- * Checks if the line starts with a label. A label is followed by a colon
- * and can be placed at the beginning of a line.
- *
- * Parameters:
- *  line        - A pointer to the line being checked.
- *  label_name  - A pointer to the variable where the label name will be stored.
- *  line_number - The line number of the label for error reporting.
- *
- * Returns:
- *  1 if the line contains a valid label, 0 otherwise.
- */
-int is_label(char **line, char **label_name, int line_number);
 
 /*
  * Function: parse_string
@@ -190,5 +133,11 @@ char *parse_string(char *line, int line_number, enum errors *status);
  *  A pointer to the parsed instruction name, or NULL in case of an error.
  */
 char *parse_linking_instruction(char *line, int line_number, enum errors *status);
+
+int valid_label_char(char *work_line, int label_length);
+char *parse_linking_instruction(char *line, int line_number, enum errors *status);
+int parse_operation(char **work_line, int line_number,
+                    memory_word temp[MAX_OPERATION_LEN], enum errors *errors,
+                    char **source_label, char **dest_label);
 
 #endif /* PARSING_H */

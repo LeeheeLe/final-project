@@ -29,6 +29,40 @@
  */
 #define ASSEMBLER_INPUT_EXT PREPROCESSOR_OUTPUT_EXT
 
+
+#define MAX_OPERATION_LEN 3         /* Maximum length of an operation. */
+#define IMMEDIATE_PARAM_INDICATOR '#'  /* Indicator for immediate parameter. */
+#define REGISTER_INDICATOR 'r'         /* Indicator for register. */
+#define REGISTER_COUNT 8              /* Number of registers. */
+#define RELATIVE_INDICATOR '&'        /* Indicator for relative operand. */
+#define OPERAND_SEPARATOR ','         /* Separator between operands. */
+
+/*
+ * Macro to skip whitespaces in a line.
+ */
+#define IGNORE_WHITESPACE(work_line)                                           \
+  while (isspace(*work_line)) {                                                \
+    work_line++;                                                               \
+  }
+
+/*
+ * Enum representing the two operand types: source and destination.
+ */
+enum op_type { DEST, SOURCE };
+
+
+
+void check_label_conflicts(enum errors *status, label_table_head *label_table,
+                           char *label_name, const int line_number);
+
+void write_str(memory data_image, int DC, char *str);
+
+int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
+                    char **operand_label, int operand_number, enum op_type type,
+                    int *relative);
+
+void check_macro_conflicts(enum errors * errors, struct Macro_table * macro_table, char * intern_name,
+                          int line_number);
 /*
  * Function: first_pass
  * --------------------
