@@ -1,16 +1,16 @@
-#include <first_pass.h>
-#include <preprocessor.h>
 #include <const_tables.h>
+#include <ctype.h>
+#include <first_pass.h>
 #include <mem_image.h>
 #include <parsing.h>
 #include <second_pass.h>
 #include <tables.h>
-#include <memory_utility.h>
-#include <ctype.h>
+#include <utility.h>
 
 /*
  * Function: handle_numbers
- * Purpose: Parses numbers from a line, handling the parsing and storing them in the data image.
+ * Purpose: Parses numbers from a line, handling the parsing and storing them in
+ * the data image.
  *
  * Parameters:
  *   line - The line of text containing the numbers.
