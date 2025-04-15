@@ -88,6 +88,11 @@ int is_comment(const char *line) {
   return 0;
 }
 
+int valid_label_char(char *work_line, int label_length) {
+  return !isspace(*work_line) &&
+         (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR) &&
+         label_length <= MAX_LABEL_LENGTH;
+}
 /*
  * Checks if a given line starts with a valid label.
  *
@@ -97,13 +102,14 @@ int is_comment(const char *line) {
  * name is returned through the `label_name` pointer.
  *
  * @param line The line to check for a label.
- * @param label_name Pointer to a string where the label name will be stored if found.
+ * @param label_name Pointer to a string where the label name will be stored if
+ * found.
  *
  * @return int Returns 1 if a valid label is found, 0 if no label is found.
  */
-int is_label(char **line, char **label_name) {
+int is_label(char **line, char **label_name, int line_number) {
   int label_length = 0;
-  char *work_name = safe_alloc(32 * sizeof(char)), *work_line = *line;
+  char *work_name = safe_alloc(MAX_LABEL_LENGTH + 1), *work_line = *line;
   char *name = work_name;
   while (isspace(*work_line)) {
     work_line++;
@@ -114,17 +120,21 @@ int is_label(char **line, char **label_name) {
     work_name++;
     label_length++;
   } /*checks that first character is a letter*/
-  for (;!isspace(*work_line) && (isalnum(*work_line) || *work_line == LABEL_DEF_CHAR); work_line++) {
+  for (; valid_label_char(work_line, label_length); work_line++) {
     if (*work_line == LABEL_DEF_CHAR) {
       *work_name = '\0';
       *label_name = name;
       *line = ++work_line;
+      if (label_length > MAX_LABEL_LENGTH) {
+        LABEL_TOO_LONG(line_number);
+        return 0;
+      }
       return 1;
     }
     *work_name = *work_line;
     work_name++;
     label_length++;
-  } //todo: length check for the labels and defining the max length somewhere
+  }
   free_ptr(name);
   return 0;
 }

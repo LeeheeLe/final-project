@@ -27,6 +27,8 @@ typedef struct {
 #define STR_INDICATOR '"'
 #define DEFAULT_EXTERN_VALUE 0
 
+#define MAX_LABEL_LENGTH 32
+
 int is_instruction(char **line, inst *instruction_type, int line_number);
 int is_whitespace(const char *line);
 int is_comment(const char *line);
