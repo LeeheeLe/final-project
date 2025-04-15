@@ -3,8 +3,6 @@
 #define MEMORY_UTILITY_H
 
 #include <stdio.h>
-#include "../Header Files/tables.h"
-//todo: why do we need to treat label pointers differently?
 
 typedef struct Memory_node {
     void *ptr;
