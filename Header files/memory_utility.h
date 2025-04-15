@@ -11,16 +11,6 @@ typedef struct Memory_node {
     struct Memory_node *next_node;
 } Memory_node;
 
-//todo: again, why do we need to treat different pointers differently here?
-typedef struct Line {
-    FILE *file;
-    char *file_name;
-    char *line;
-    int line_num;
-    label_node *label;
-} Line;
-
-
 void *safe_alloc(size_t size);
 
 void free_ptr(const void *ptr);
