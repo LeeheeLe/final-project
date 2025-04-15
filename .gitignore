@@ -2,4 +2,3 @@ cmake-build-debug
 .idea
 .clang-tidy
 test.*
-ps.*
