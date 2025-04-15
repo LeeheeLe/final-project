@@ -18,7 +18,9 @@ SRC = \
   $(SRC_DIR)/parsing.c \
   $(SRC_DIR)/preprocessor.c \
   $(SRC_DIR)/second_pass.c \
-  $(SRC_DIR)/memory_utility.c
+  $(SRC_DIR)/memory_utility.c \
+  $(SRC_DIR)/utility.c \
+  $(SRC_DIR)/handle_text.c
 
 # Executable
 TARGET = final_project
