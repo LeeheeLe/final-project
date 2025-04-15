@@ -1,5 +1,6 @@
 #include "../Header files/first_pass.h"
 #include "../Header files/preprocessor.h"
+#include "../Header Files/memory_utility.h"
 #include <stdio.h>
 
 /*
@@ -37,6 +38,7 @@ int main(const int argc, char *argv[]) {
   for (i = 1; i < argc; i++) {
     preprocess(argv[i]); /* Call the preprocess function on the file */
     first_pass(argv[i]); /* Call the first pass assembler on the file */
+    free_all_memory();
   }
   return 0; /* Return success code */
 }
