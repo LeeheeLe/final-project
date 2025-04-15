@@ -24,8 +24,8 @@ SRC = \
 TARGET = final_project
 
 # Test files (passed as args to main)
-TEST_INPUTS = test_1.txt test_2.txt test_3.txt
-
+VALID_TEST_INPUTS = example1 example2 example3 example4 example5 ps test
+INVALID_TEST_INPUTS = invalid_example1 invalid_example2 invalid_example3 invalid_example4 invalid_example5
 .PHONY: all run test clean
 
 all: $(TARGET)
@@ -34,7 +34,8 @@ $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $(SRC)
 
 run: $(TARGET)
-	./$(TARGET) $(TEST_INPUTS)
+	cd "Valid input output ex" && ../$(TARGET) $(VALID_TEST_INPUTS)
+	cd "Invalid input output ex" && ../$(TARGET) $(INVALID_TEST_INPUTS)
 
 test: run
 
