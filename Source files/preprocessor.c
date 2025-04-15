@@ -1,10 +1,9 @@
-#include "../Header files/preprocessor.h"
-#include "../Header files/input.h"
-#include "../Header Files/memory_utility.h"
-#include "../Header files/file_extensions.h"
+#include <preprocessor.h>
+#include <input.h>
+#include <memory_utility.h>
+#include <file_extensions.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define IGNORE_WHITESPACE(work_line)                                           \
@@ -12,27 +11,12 @@ while (isspace(*work_line)) {                                                \
 work_line++;                                                               \
 }
 
-/**
- * reserved_names - A list of reserved names in the assembly language.
- *
- * These reserved names cannot be used as macro names, labels, or instructions.
- */
 char *reserved_names[28] = {
     "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
     "jsr", "red", "prn", "rts", "stop", ".data", ".string", ".entry", ".extern"
-};
+  };
 
-struct Macro_line{
-    char* line;
-    struct Macro_line *next_line;
-} Macro_line;
-
-struct Macro_table {
-    char *macro_name;
-    struct Macro_line *first_line;
-    struct Macro_table *next_macro;
-}Macro_table;
 
 /**
  * preprocess - Preprocesses a given file by expanding macros and handling
@@ -41,16 +25,20 @@ struct Macro_table {
  *
  * This function reads a file, identifies any macros, and expands them
  * according to the macro definitions. It writes the resulting content
- * to an output file.
+ * to an output file. The output file will contain the code with macros
+ * expanded.
  *
- * Returns: A pointer to the macro table.
+ * Returns: A pointer to the macro table (linked list of macros) or NULL if an error occurs.
  */
-struct Macro_table *preprocess(const char *file_name) {
-    int macro_idx = -1, line_number = -1;
+Macro_table *preprocess(const char *file_name) {
     enum errors ecode = NORMAL;
     struct Macro_table *curr_macro, *head_macro;
-    head_macro = safe_alloc(sizeof(struct Macro_table));
     char *input_file, *output_file;
+    char *line;
+    FILE *input, *output;
+
+    int macro_idx = -1, line_number = -1;
+    head_macro = safe_alloc(sizeof(struct Macro_table));
     curr_macro = head_macro;
 
     head_macro->first_line = NULL;
@@ -60,8 +48,8 @@ struct Macro_table *preprocess(const char *file_name) {
     input_file = add_extension(file_name, PREPROCESSOR_INPUT_EXT);
     output_file = add_extension(file_name, PREPROCESSOR_OUTPUT_EXT);
 
-    FILE *input = fopen(input_file, "r"); /*open input file in 'read' mode*/
-    FILE *output = fopen(output_file, "w"); /*open output file in 'write' mode*/
+    input = fopen(input_file, "r"); /*open input file in 'read' mode*/
+    output = fopen(output_file, "w"); /*open output file in 'write' mode*/
 
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
@@ -69,7 +57,7 @@ struct Macro_table *preprocess(const char *file_name) {
         return NULL;
     }
 
-    char *line = NULL; /*pointer to a buffer for storing each line read from the file*/
+    line = NULL; /*pointer to a buffer for storing each line read from the file*/
     while ((line = getLine(input)) != NULL) {
         line_number++;
         if ((macro_idx = is_saved_macro(line, head_macro)) != -1) {
@@ -113,15 +101,17 @@ struct Macro_table *preprocess(const char *file_name) {
  * @curr_macro: The current macro to append the line to.
  *
  * This function will append a line to the macro's list of lines.
+ * If this is the first line of the macro, it will initialize the first line.
  */
 void append_line_to_macro(char *line, struct Macro_table *curr_macro) {
+    struct Macro_line *curr_line;
     if (curr_macro->first_line == NULL) {
         curr_macro->first_line = safe_alloc(sizeof(struct Macro_line));
         curr_macro->first_line->line = line;
         curr_macro->first_line->next_line = NULL;
         return;
     }
-    struct Macro_line *curr_line = curr_macro->first_line;
+    curr_line = curr_macro->first_line;
     while (curr_line->next_line != NULL) {
         curr_line = curr_line->next_line;
     }
@@ -261,10 +251,10 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
     EXTRA_CHARS_MACRO_ERROR(line_number);
 }
 
-/** is_saved_macro - Checks if the given line matches any saved macro.
+/**
+ * is_saved_macro - Checks if the given line matches any saved macro.
  * @line: The line to check.
  * @head: The head of the macro table.
- * @ecode: The error code pointer for handling errors.
  *
  * This function checks if the given line is a macro definition and matches
  * any previously defined macro in the macro table.

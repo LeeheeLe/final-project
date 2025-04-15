@@ -1,15 +1,17 @@
 /*
  * File: operations.c
- * Defines the operation syntax table and provides a function to retrieve operation details by name.
+ * -------------------
+ * This file defines the operation syntax table and provides a function to retrieve
+ * operation details based on the operation's name.
  */
 
-#include "../Header files/const_tables.h"
-#include "../Header files/errors.h"
+#include <const_tables.h>
+#include <errors.h>
 #include <stdio.h>
 #include <string.h>
 
 /* Default structure representing a non-existent operation */
-static const operation_syntax no_operation = {NULL, -1, -1, {0,0,0,0}, {0,0,0,0}};
+static const operation_syntax no_operation = {NULL, -1, -1, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
 /*
  * Array of valid operations with their corresponding opcodes and addressing modes.
@@ -44,10 +46,11 @@ const int num_of_operations = sizeof(operations) / sizeof(operation_syntax);
 
 /*
  * Function: find_operation
- * Searches for an operation by name and returns its corresponding structure.
+ * -------------------------
+ * Searches for an operation by its name and returns its corresponding structure.
  *
  * Parameters:
- *   - name: The operation name to search for.
+ *   - name: The name of the operation to search for.
  *
  * Returns:
  *   - The corresponding operation_syntax structure if found.
@@ -61,5 +64,5 @@ operation_syntax find_operation(char *name) {
         }
     }
     NON_EXISTANT_NAME(name);  /* Trigger an error for a non-existent operation */
-    return no_operation;       /* Return a default structure */
+    return no_operation;       /* Return the default no-operation structure */
 }

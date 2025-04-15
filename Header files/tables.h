@@ -128,7 +128,7 @@ intern_node *add_intern(char *name, intern_type type, int mem_place, intern_node
  * @param mem_place the memory place associated with the interned label
  * @param type the type of interned label (immediate or relative)
  */
-void add_new_intern(intern_table_head *head, const char *name, int mem_place, intern_type type);
+void add_new_intern(intern_table_head *head, char *name, int mem_place, intern_type type);
 
 /**
  * @brief Checks for the presence of interned labels in the label table.
@@ -170,7 +170,7 @@ entry_table_head *initialise_entry_table();
  *
  * @return A pointer to the newly added entry node.
  */
-entry_node *add_entry(const char *name, entry_node table);
+entry_node *add_entry(char *name, entry_node table);
 
 /**
  * @brief Adds an entry node to the entry table.
@@ -186,13 +186,6 @@ void add_entry_node(entry_node *node, entry_node *curr);
  * @param head the entry table to add the entry to
  * @param name the name of the entry to add
  */
-void add_new_entry(entry_table_head *head, const char *name);
-
-/**
- * @brief Iterates over all entries in the entry table.
- *
- * @param entry_head the entry table to iterate over
- */
-void iterate_entry(entry_table_head *entry_head);
+void add_new_entry(entry_table_head *head, char *name);
 
 #endif /*TABLES_H*/

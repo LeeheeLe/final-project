@@ -1,6 +1,5 @@
-#include "../Header files/tables.h"
-#include <Header Files/memory_utility.h>
-#include <stdlib.h>
+#include <tables.h>
+#include <memory_utility.h>
 #include <string.h>
 
 /*
@@ -25,11 +24,19 @@
  * - `find_label`: Finds a label by its name in the label table.
  */
 
-/*
- * Purpose:
- * Initializes a new label table with a NULL root.
+/**
+ * Function: initialise_label_table
+ * Purpose: Initializes a new label table with a NULL root.
  *
- * @return table_head* A pointer to the newly initialized label table.
+ * This function creates a label table structure and sets its root pointer
+ * to `NULL`. This table will later hold label nodes organized in a binary
+ * search tree.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - label_table_head*: A pointer to the newly initialized label table.
  */
 label_table_head *initialise_label_table() {
   label_table_head *root = safe_alloc(sizeof(label_table_head));
@@ -37,26 +44,35 @@ label_table_head *initialise_label_table() {
   return root;
 }
 
-/*
- * Purpose:
- * Compares two label nodes by their names.
+/**
+ * Function: node_cmp
+ * Purpose: Compares two label nodes by their names.
  *
- * @param node1 The first label node.
- * @param node2 The second label node.
+ * This function compares the names of two label nodes using the `strcmp`
+ * function. It returns the result of `strcmp` to determine their lexicographical order.
  *
- * @return int Result of strcmp between the names of node1 and node2.
+ * Parameters:
+ *   - label_node node1: The first label node.
+ *   - label_node node2: The second label node.
+ *
+ * Returns:
+ *   - int: Result of `strcmp` between the names of `node1` and `node2`.
  */
 int node_cmp(label_node node1, label_node node2) {
   return strcmp(node1.name, node2.name);
 }
 
-/*
- * Purpose:
- * Recursively adds a new label node to the correct position in the binary search tree
- * of labels based on the comparison of names.
+/**
+ * Function: add_label_node
+ * Purpose: Recursively adds a new label node to the correct position in the binary search tree
+ *          of labels based on the comparison of names.
  *
- * @param node The label node to be added.
- * @param curr The current label node in the tree where the new node will be inserted.
+ * This function compares the new label node's name with the current node in the tree
+ * and inserts the new node in the left or right subtree accordingly.
+ *
+ * Parameters:
+ *   - label_node* node: The label node to be added.
+ *   - label_node* curr: The current node in the tree where the new node will be inserted.
  */
 void add_label_node(label_node *node, label_node *curr) {
   if (curr->left == NULL && curr->right == NULL) {
@@ -82,17 +98,19 @@ void add_label_node(label_node *node, label_node *curr) {
   }
 }
 
-/*
- * Purpose:
- * Creates a new label node with the given data and adds it to the label table.
- * If the root is NULL, the node becomes the root; otherwise, it is added
- * to the appropriate position in the tree.
+/**
+ * Function: add_label
+ * Purpose: Creates a new label node with the given data and adds it to the label table.
  *
- * @param head The label table to which the label is being added.
- * @param name The name of the label.
- * @param value The value associated with the label.
- * @param type The type of the label (like code or data).
- * @param linking_type The type of linking (like external or internal).
+ * If the root of the table is `NULL`, the node becomes the root of the table.
+ * Otherwise, it is added to the correct position in the binary search tree.
+ *
+ * Parameters:
+ *   - label_table_head* head: The label table to which the label is being added.
+ *   - const char* name: The name of the label.
+ *   - int value: The value associated with the label.
+ *   - label_data_type type: The type of the label (e.g., code or data).
+ *   - linking_type linking_type: The type of linking (e.g., external or internal).
  */
 void add_label(label_table_head *head, const char *name, int value,
                label_data_type type, linking_type linking_type) {
@@ -110,20 +128,27 @@ void add_label(label_table_head *head, const char *name, int value,
   add_label_node(node, head->root);
 }
 
-/*
- * Purpose:
- * Recursively searches for a label node by name in the binary search tree.
+/**
+ * Function: find_node
+ * Purpose: Recursively searches for a label node by name in the binary search tree.
  *
- * @param name The name of the label being searched for.
- * @param node The current node being checked.
+ * This function traverses the binary search tree by comparing the given `name` with
+ * the current node's name and recursively moves to the left or right subtree until
+ * the node is found or the end of the tree is reached.
  *
- * @return label* A pointer to the label node if found, NULL otherwise.
+ * Parameters:
+ *   - const char* name: The name of the label being searched for.
+ *   - label_node* node: The current node being checked.
+ *
+ * Returns:
+ *   - label_node*: A pointer to the label node if found, `NULL` otherwise.
  */
 label_node *find_node(const char *name, label_node *node) {
+  int compare;
   if (node == NULL) {
     return node;
   }
-  int compare = strcmp(name, node->name);
+  compare = strcmp(name, node->name);
   if (compare == 0) {
     return node;
   }
@@ -133,15 +158,20 @@ label_node *find_node(const char *name, label_node *node) {
   return find_node(name, node->left);
 }
 
-/*
- * Purpose:
- * Finds a label in the label table by its name by calling the recursive
- * search function `find_node`.
+/**
+ * Function: find_label
+ * Purpose: Finds a label in the label table by its name by calling the recursive
+ *          search function `find_node`.
  *
- * @param name The name of the label being searched for.
- * @param head The label table being searched.
+ * This function is a wrapper around the `find_node` function to search for a label
+ * in the label table by its name.
  *
- * @return label* A pointer to the label node if found, NULL otherwise.
+ * Parameters:
+ *   - const char* name: The name of the label being searched for.
+ *   - label_table_head head: The label table being searched.
+ *
+ * Returns:
+ *   - label_node*: A pointer to the label node if found, `NULL` otherwise.
  */
 label_node *find_label(const char *name, label_table_head head) {
   return find_node(name, head.root);

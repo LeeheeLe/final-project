@@ -30,6 +30,25 @@
 #include "errors.h"
 #include <stdio.h>
 
+/**
+ * reserved_names - A list of reserved names in the assembly language.
+ *
+ * These reserved names cannot be used as macro names, labels, or instructions.
+ */
+extern char *reserved_names[28];
+
+typedef struct Macro_line{
+  char* line;
+  struct Macro_line *next_line;
+} Macro_line;
+
+typedef struct Macro_table{
+  char *macro_name;
+  Macro_line *first_line;
+  struct Macro_table *next_macro;
+} Macro_table;
+
+
 /*
  * Function: preprocess
  * --------------------
@@ -42,7 +61,7 @@
  * Returns:
  *  A pointer to the macro table containing all macros found in the file.
  */
-struct Macro_table *preprocess(const char *file_name);
+Macro_table *preprocess(const char *file_name);
 
 /*
  * Function: mcro_start

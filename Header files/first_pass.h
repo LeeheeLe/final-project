@@ -1,18 +1,49 @@
 #ifndef FIRST_PASS_H
 #define FIRST_PASS_H
 
-#include "errors.h"
-#include "file_extensions.h"
-#include "preprocessor.h"
-#include "input.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <preprocessor.h>
 
+/*
+ * File: first_pass.h
+ * ------------------
+ * This header declares the first pass function used in the assembler.
+ * The first pass processes a preprocessed assembly file (.am), builds
+ * the symbol table, and validates labels, instructions, and syntax.
+ *
+ * The first pass uses:
+ *  - Preprocessed input from the macro processor
+ *  - Macro table for macro validation
+ *  - Error handling and reporting
+ *
+ * Dependencies:
+ *  - errors.h              : For reporting syntax/logic errors
+ *  - file_extensions.h     : For consistent file extension references
+ *  - preprocessor.h        : For macro table structure
+ *  - input.h               : For reading lines and tokens
+ *  - Standard C libraries  : For string, I/O, and character functions
+ */
+
+/*
+ * ASSEMBLER_INPUT_EXT is defined as the output of the preprocessor (.am)
+ * This allows the assembler to work on preprocessed code without macros.
+ */
 #define ASSEMBLER_INPUT_EXT PREPROCESSOR_OUTPUT_EXT
-/*the input of the first pass is the output of the preprocessor*/
 
-void first_pass(const char *file_name, struct Macro_table *macro_table);
+/*
+ * Function: first_pass
+ * --------------------
+ * Executes the first pass of the assembler on the given file.
+ * This involves:
+ *  - Parsing and validating each line
+ *  - Collecting label definitions
+ *  - Validating instructions and operands
+ *  - Building the symbol table
+ *  - Tracking memory addresses (IC/DC)
+ *
+ * Parameters:
+ *  file_name   - The base name of the source file (without extension)
+ *  macro_table - A pointer to the macro table, used for validating macro usage
+ */
+void first_pass(const char *file_name, Macro_table *macro_table);
 
-#endif // FIRST_PASS_H
+#endif /* FIRST_PASS_H */

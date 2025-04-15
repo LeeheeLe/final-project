@@ -37,7 +37,7 @@
  *  intern_table     - The table of interned labels.
  *  ICF              - The initial code address for the code section.
  */
-void populate_labels(const char *file_name, memory *code,
+void populate_labels(const char *file_name, memory code,
                      label_table_head label_table,
                      intern_table_head intern_table, int ICF);
 
@@ -71,7 +71,7 @@ void create_entry_file(const char *file_name, label_table_head label_table,
  *  ICF             - The initial code address.
  *  DCF             - The initial data address.
  */
-void create_ob_file(const char *file_name, const memory *code,
-                    const memory *data, const int ICF, const int DCF);
+void create_ob_file(const char *file_name, const memory code,
+                    const memory data, const int ICF, const int DCF);
 
 #endif /* SECOND_PASS_H */

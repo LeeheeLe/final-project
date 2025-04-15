@@ -1,11 +1,10 @@
-#include "../Header files/input.h"
-#include "../Header files/errors.h"
-#include "../Header files/memory_utility.h"
+#include <input.h>
+#include <memory_utility.h>
 #include <string.h>
 
 /*
  * Function: getLine
- * Reads a line of text from the given input file.
+ * Purpose: Reads a line of text from the given input file.
  *
  * This function dynamically allocates memory to store the characters of a line from a file.
  * It reads characters one by one until it encounters a newline or EOF (End of File).
@@ -68,6 +67,20 @@ char *getLine(FILE *input) {
     return line;  /* Return the complete line */
 }
 
+/**
+ * Function: add_extension
+ * Purpose: Adds an extension to a given filename string.
+ *
+ * This function takes a base filename and appends a specified extension to it.
+ * It returns the newly constructed filename with the extension appended.
+ *
+ * Parameters:
+ *   - const char *filename: The original filename to which the extension will be added.
+ *   - const char *extension: The extension to be appended to the filename.
+ *
+ * Returns:
+ *   - A new string (char*) containing the filename with the extension added.
+ */
 char *add_extension(const char *filename, const char *extension) {
     char *new_filename;
     const int filename_length = (int) strlen(filename);
