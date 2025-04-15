@@ -18,9 +18,9 @@ typedef struct Line {
 } Line;
 
 
-void *allocate_memory(long size);
+void *allocate_memory(size_t size);
 
-void deallocate_memory(void *ptr);
+void free_ptr(const void *ptr);
 
 void free_all_memory();
 

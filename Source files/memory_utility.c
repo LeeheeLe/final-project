@@ -1,35 +1,23 @@
 #include "../Header Files/memory_utility.h"
 #include "../Header Files/errors.h"
 #include "../Header Files/preprocessor.h"
-#include "../Header Files/tables.h"
 
 static Memory_node *head = NULL;
 
-
-void free_label_table(label_node *node) {
-        if (node == NULL) return;
-        free_label_table(node->left);
-        free_label_table(node->right);
-        free((char *)node->name);
-        free(node);
-}
-
-void *allocate_memory(long size) {
+void *allocate_memory(const size_t size) {
     Memory_node *new_node;
     void *ptr = malloc(size);
     if (ptr == NULL) {
         MEM_ALOC_ERROR();
-        free_label_table(root); ////todo:where do we define root?
         free_all_memory();
-        return NULL;
+        exit(EXIT_FAILURE);
     }
     new_node = (Memory_node *)malloc(sizeof(Memory_node));
     if (new_node == NULL) {
         MEM_ALOC_ERROR();
         free(ptr);
-        free_label_table(root);
         free_all_memory();
-        return NULL;
+        exit(EXIT_FAILURE);
     }
     new_node->ptr = ptr;
     new_node->next_node = head;
@@ -37,7 +25,7 @@ void *allocate_memory(long size) {
     return ptr;
 }
 
-void deallocate_memory(void *ptr) {
+void free_ptr(const void *ptr) {
     Memory_node *current = head;
     Memory_node *prev = NULL;
 

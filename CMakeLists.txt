@@ -15,4 +15,5 @@ add_executable(final_project
         "Source files/main.c"
         "Source files/parsing.c"
         "Source files/preprocessor.c"
-        "Source files/second_pass.c")
+        "Source files/second_pass.c"
+        "Source files/memory_utility.c")
