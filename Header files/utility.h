@@ -1,5 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
+#include <const_tables.h>
+#include <parsing.h>
 
 int is_data_instruction(inst instruction_type);
 int is_linking_instruction(inst instruction_type);
@@ -23,9 +25,9 @@ int is_register(char *operand);
  */
 int is_instruction(char **line, inst *instruction_type, int line_number);
 
-/*
+/**
  * Function: is_whitespace
- * -----------------------
+ *
  * Checks if the line consists only of whitespace characters (spaces, tabs, etc.).
  *
  * Parameters:
@@ -36,7 +38,7 @@ int is_instruction(char **line, inst *instruction_type, int line_number);
  */
 int is_whitespace(const char *line);
 
-/*
+/**
  * Function: is_comment
  * --------------------
  * Checks if the line is a comment (starts with a comment character).

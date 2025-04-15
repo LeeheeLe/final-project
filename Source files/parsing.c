@@ -1,7 +1,10 @@
-#include <parsing.h>
-#include <errors.h>
-#include <memory_utility.h>
+#include <const_tables.h>
 #include <ctype.h>
+#include <errors.h>
+#include <handle_text.h>
+#include <memory_utility.h>
+#include <parsing.h>
+#include <utility.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -170,13 +173,15 @@ int parse_operation(char **work_line, int line_number,
   char *line = *work_line;
   char *copy = safe_alloc(strlen(*work_line) + 1);
   IGNORE_WHITESPACE(line);
-  for (i = 0; *line != '\0'; line++) {
-    if (isspace(*line)) {
+  i = 0;
+  while (1) {
+    if (isspace(*line) || *line == '\0') {
       copy[i] = '\0';
       break;
     }
     copy[i] = *line;
     i++;
+    line++;
   }
   syntax = find_operation(copy);
   if (is_empty(syntax.source_type) && is_empty(syntax.destination_type)) {

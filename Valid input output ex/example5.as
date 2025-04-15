@@ -18,7 +18,8 @@ mcro CONTROL_REGISTERS
     dec r4
 mcroend
 
-ENTRY_POINT: INITIALIZE
+ENTRY_POINT: dec LABEL_ONE
+             INITIALIZE
              lea STRING, r5
              cmp r3, r4
              CONTROL_REGISTERS

@@ -6,7 +6,8 @@
 
 #include <first_pass.h>
 #include <preprocessor.h>
-#include <const_tables.h>
+#include <utility.h>
+#include <handle_text.h>
 #include <mem_image.h>
 #include <parsing.h>
 #include <second_pass.h>

@@ -2,6 +2,10 @@
 #define HANDLE_TEXT_H
 
 #include <ctype.h>
+#include <mem_image.h>
+#include <tables.h>
+#include <parsing.h>
+
 
 int handle_numbers(char *line, int line_number, enum errors *status, memory data_image, int DC);
 void handle_data_instruction(int *DC, memory data_image, enum errors *status,

@@ -1,7 +1,9 @@
 #ifndef FIRST_PASS_H
 #define FIRST_PASS_H
 
+#include <mem_image.h>
 #include <preprocessor.h>
+#include <tables.h>
 
 /**
  * File: first_pass.h

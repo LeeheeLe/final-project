@@ -3,6 +3,9 @@
 
 #include "errors.h"
 
+#include <first_pass.h>
+#include <mem_image.h>
+
 /*
  * File: parsing.h
  * ---------------
@@ -16,7 +19,8 @@
  *
  * Constants:
  *  - LABEL_DEF_CHAR: The character used to define labels (:).
- *  - INSTRUCTION_START_CHAR: The character indicating the start of an instruction (.).
+ *  - INSTRUCTION_START_CHAR: The character indicating the start of an
+ * instruction (.).
  *  - STR_INDICATOR: The character used to mark string literals (").
  *  - DEFAULT_EXTERN_VALUE: Default value for external references.
  *  - MAX_LABEL_LENGTH: Maximum length allowed for label names.
