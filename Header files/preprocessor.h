@@ -21,7 +21,7 @@ struct Macro_line{
 struct Macro_table {
     char *macro_name;
     struct line *first_line;
-    struct macro_table *next_macro;
+    struct Macro_table *next_macro;
 }Macro_table;
 
 struct Macro_table *preprocess(const char *file_name);

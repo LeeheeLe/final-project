@@ -249,12 +249,11 @@ void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum er
  */
 int is_saved_macro(const char *line, struct Macro_table *head, enum errors *ecode) {
     int i, j, k = 0;
-    struct Macro_table curr = *head;
-//todo:delete &curr ! NULL ?
-    while (&curr != NULL && curr.macro_name != NULL) {
+    struct Macro_table *curr = head;
+    while (curr != NULL && curr->macro_name != NULL) {
         for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
         } /*ignore whitespace*/
-        for (j = 0; *(line + i + j) == curr.macro_name[j] && i < strlen(line) && j < strlen(curr.macro_name); j++) {
+        for (j = 0; *(line + i + j) == curr->macro_name[j] && i < strlen(line) && j < strlen(curr->macro_name); j++) {
         }
         for (i = i + j; isspace(*(line + i)) && i < strlen(line); i++) {
         } /*ignore whitespace*/
@@ -262,10 +261,10 @@ int is_saved_macro(const char *line, struct Macro_table *head, enum errors *ecod
             return k;
         }
         k++;
-        if (curr.next_macro == NULL) {
+        if (curr->next_macro == NULL) {
             return -1;
         }
-        curr = *curr.next_macro;
+        curr = curr->next_macro;
     }
     return -1;
 }
