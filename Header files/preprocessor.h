@@ -16,11 +16,12 @@
 
 struct Macro_line{
     char* line;
-    struct line *next_line;
+    struct Macro_line *next_line;
 } Macro_line;
+
 struct Macro_table {
     char *macro_name;
-    struct line *first_line;
+    struct Macro_line *first_line;
     struct Macro_table *next_macro;
 }Macro_table;
 

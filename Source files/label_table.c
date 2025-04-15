@@ -1,23 +1,26 @@
 #include "../Header files/tables.h"
+#include <Header Files/memory_utility.h>
 #include <stdlib.h>
 #include <string.h>
 
 /*
  * Purpose:
- * This file defines functions and structures for managing labels in the assembler project,
- * including functionality for creating a label table, adding labels to the table,
- * and searching for labels by their name.
+ * This file defines functions and structures for managing labels in the
+ * assembler project, including functionality for creating a label table, adding
+ * labels to the table, and searching for labels by their name.
  *
  * Key Structures:
- * - `table_head`: A structure representing the root of a binary search tree for labels.
- * - `label`: A structure representing an individual label with fields such as name, value,
- *   type, and linking type.
+ * - `table_head`: A structure representing the root of a binary search tree for
+ * labels.
+ * - `label`: A structure representing an individual label with fields such as
+ * name, value, type, and linking type.
  *
  * Key Functions:
  * - `initialise_table`: Initializes a new label table.
  * - `node_cmp`: Compares two labels by their names.
  * - `add_node`: Adds a new label node to the binary search tree of labels.
- * - `add_label`: Adds a label to the table, initializing the label node with given data.
+ * - `add_label`: Adds a label to the table, initializing the label node with
+ * given data.
  * - `find_node`: Searches for a label node by name in the binary search tree.
  * - `find_label`: Finds a label by its name in the label table.
  */
@@ -29,7 +32,7 @@
  * @return table_head* A pointer to the newly initialized label table.
  */
 label_table_head *initialise_label_table() {
-  label_table_head *root = malloc(sizeof(label_table_head));
+  label_table_head *root = safe_alloc(sizeof(label_table_head));
   root->root = NULL;
   return root;
 }
@@ -93,7 +96,7 @@ void add_label_node(label_node *node, label_node *curr) {
  */
 void add_label(label_table_head *head, const char *name, int value,
                label_data_type type, linking_type linking_type) {
-  label_node *node = malloc(sizeof(label_node));
+  label_node *node = safe_alloc(sizeof(label_node));
   node->name = name;
   node->value = value;
   node->type = type;

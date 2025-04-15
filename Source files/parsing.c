@@ -1,5 +1,6 @@
 #include "../Header files/parsing.h"
 #include "../Header files/errors.h"
+#include <Header Files/memory_utility.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -102,7 +103,7 @@ int is_comment(const char *line) {
  */
 int is_label(char **line, char **label_name) {
   int label_length = 0;
-  char *work_name = malloc(32 * sizeof(char)), *work_line = *line;
+  char *work_name = safe_alloc(32 * sizeof(char)), *work_line = *line;
   char *name = work_name;
   while (isspace(*work_line)) {
     work_line++;
@@ -153,7 +154,7 @@ char *parse_string(char *line, int line_number, enum errors *status) {
     return NULL;
   }
   if (*work_line == STR_INDICATOR) {
-    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    char *orig_str, *str = safe_alloc(strlen(work_line) * sizeof(char) + 1);
     orig_str = str;
     work_line++;
     while (*work_line != '\0') {
@@ -200,7 +201,7 @@ char *parse_linking_instruction(char *line, int line_number, enum errors *status
     return NULL;
   }
   if (isalpha(*work_line)) {
-    char *orig_str, *str = malloc(strlen(work_line) * sizeof(char) + 1);
+    char *orig_str, *str = safe_alloc(strlen(work_line) * sizeof(char) + 1);
     orig_str = str;
     for (; *work_line != '\0' && !isspace(*work_line) && isalnum(*work_line);
          work_line++) {

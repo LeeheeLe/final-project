@@ -33,12 +33,7 @@ char *getLine(FILE *input) {
     char *new_line;
 
     /* Allocate initial memory for the line buffer */
-    line = (char *) malloc(line_size * sizeof(char));
-    if (line == NULL) {
-        MEM_ALOC_ERROR();
-        return NULL;  /* Memory allocation failed */
-    }
-
+    line = (char *) safe_alloc(line_size * sizeof(char));
     /* Continuously read characters until a newline or EOF is encountered */
     while (1) {
         c = (char) fgetc(input);
@@ -82,14 +77,7 @@ char *add_extension(const char *filename, const char *extension) {
     const int filename_length = (int) strlen(filename);
     const int extension_length = (int) strlen(extension);
 
-    new_filename = (char *)malloc(filename_length + extension_length + 1);
-    if (new_filename == NULL) {
-        /*memory allocation failed */
-        free_all_memory();
-        MEM_ALOC_ERROR();
-        exit(1);
-    }
-
+    new_filename = (char *)safe_alloc(filename_length + extension_length + 1);
     strcpy(new_filename, filename);
     strcat(new_filename, extension);
     return new_filename;

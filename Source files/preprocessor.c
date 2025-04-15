@@ -1,6 +1,8 @@
-#include <stdio.h>
-#include "../Header files/input.h"
 #include "../Header files/preprocessor.h"
+#include "../Header files/input.h"
+#include <stdio.h>
+
+#include <Header Files/memory_utility.h>
 
 /**
  * preprocess - Preprocesses a given file by expanding macros and handling
@@ -17,7 +19,7 @@ struct Macro_table *preprocess(const char *file_name) {
     int macro_idx, line_number = -1;
     enum errors ecode = NORMAL;
     struct Macro_table *curr_macro, *head_macro;
-    head_macro = malloc(sizeof(struct Macro_table));
+    head_macro = safe_alloc(sizeof(struct Macro_table));
     char *input_file, *output_file;
     curr_macro = head_macro;
 
@@ -30,13 +32,8 @@ struct Macro_table *preprocess(const char *file_name) {
     head_macro->macro_name = NULL;
     head_macro->next_macro = NULL;
 
-    input_file = malloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
-    output_file = malloc(strlen(file_name) + strlen(OUTPUT_EXT) + 1);
-
-    if (input_file == NULL || output_file == NULL) {
-        MEM_ALOC_ERROR();
-        return NULL;
-    }
+    input_file = safe_alloc(strlen(file_name) + strlen(INPUT_EXT) + 1);
+    output_file = safe_alloc(strlen(file_name) + strlen(OUTPUT_EXT) + 1);
 
     input_file = strcpy(input_file, file_name);
     output_file = strcpy(output_file, file_name);
@@ -91,20 +88,18 @@ struct Macro_table *preprocess(const char *file_name) {
  */
 void append_line_to_macro(char *line, struct Macro_table *curr_macro) {
     if (curr_macro->first_line == NULL) {
-        curr_macro->first_line = malloc(sizeof(struct Macro_line));
-        curr_macro->first_line->line = NULL;
+        curr_macro->first_line = safe_alloc(sizeof(struct Macro_line));
+        curr_macro->first_line->line = line;
         curr_macro->first_line->next_line = NULL;
-        if (curr_macro->first_line == NULL) MEM_ALOC_ERROR();
+        return;
     }
-
     struct Macro_line *curr_line = curr_macro->first_line;
     while (curr_line->next_line != NULL) {
         curr_line = curr_line->next_line;
     }
-    curr_line->next_line = malloc(sizeof(struct Macro_line));
-    curr_line->next_line->line = NULL;
+    curr_line->next_line = safe_alloc(sizeof(struct Macro_line));
+    curr_line->next_line->line = line;
     curr_line->next_line->next_line = NULL;
-    curr_line->line = line;
 }
 
 /*
@@ -209,7 +204,7 @@ int is_reserved_name(char *mcro_name) {
  */
 void insert_macro_name(const char *line, struct Macro_table *curr_macro, enum errors *ecode, int line_number) {
     int i, j;
-    char *macro_name = malloc(strlen(line) * sizeof(char));
+    char *macro_name = safe_alloc(strlen(line)+1);
 
     for (i = 0; isspace(*(line + i)) && i < strlen(line); i++) {
     } /*ignore whitespace*/

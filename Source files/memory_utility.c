@@ -4,7 +4,7 @@
 
 static Memory_node *head = NULL;
 
-void *allocate_memory(const size_t size) {
+void *safe_alloc(const size_t size) {
     Memory_node *new_node;
     void *ptr = malloc(size);
     if (ptr == NULL) {

@@ -1,15 +1,12 @@
-#include "../Header Files/tables.h"
 #include "../Header Files/errors.h"
+#include "../Header Files/tables.h"
+#include <Header Files/memory_utility.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 entry_node *add_entry(const char * name, entry_node table) {
-  entry_node* new_entry = (entry_node*)malloc(sizeof(entry_node));  /* Allocate memory for the new entry label. */
-  if (!new_entry) {
-    MEM_ALOC_ERROR();
-    return NULL;
-}
+  entry_node* new_entry = (entry_node*)safe_alloc(sizeof(entry_node));  /* Allocate memory for the new entry label. */
   new_entry->name = strdup(name);  /* Duplicate the name of the entry label. */
   new_entry->next_entry = NULL;  /* Initialize the next pointer to NULL, indicating the end of the list. */
   return new_entry;  /* Return the newly created entry label. */
@@ -25,7 +22,7 @@ void add_entry_node(entry_node *node, entry_node *curr) {
 
 
 void add_new_entry(entry_table_head *head, const char *name) {
-  entry_node *node = malloc(sizeof(entry_node));
+  entry_node *node = safe_alloc(sizeof(entry_node));
   node->name = strdup(name);
   node->next_entry = NULL;
   if (head->root == NULL) {
@@ -49,7 +46,7 @@ void free_entry_list(entry_node* head) {
 }
 
 entry_table_head *initialise_entry_table() {
-  entry_table_head *root = malloc(sizeof(entry_table_head));
+  entry_table_head *root = safe_alloc(sizeof(entry_table_head));
   root->root = NULL;
   return root;
 }

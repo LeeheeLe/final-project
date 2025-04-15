@@ -4,11 +4,14 @@
 
 #include <stdio.h>
 #include "../Header Files/tables.h"
+//todo: why do we need to treat label pointers differently?
+
 typedef struct Memory_node {
     void *ptr;
     struct Memory_node *next_node;
 } Memory_node;
 
+//todo: again, why do we need to treat different pointers differently here?
 typedef struct Line {
     FILE *file;
     char *file_name;
@@ -18,7 +21,7 @@ typedef struct Line {
 } Line;
 
 
-void *allocate_memory(size_t size);
+void *safe_alloc(size_t size);
 
 void free_ptr(const void *ptr);
 

@@ -8,8 +8,10 @@
 #include "../Header files/const_tables.h"
 #include "../Header files/mem_image.h"
 #include "../Header files/parsing.h"
-#include "../Header files/tables.h"
 #include "../Header files/second_pass.h"
+#include "../Header files/tables.h"
+
+#include <Header Files/memory_utility.h>
 
 /*todo: divide this huge file to mini files according to similar tasks*/
 
@@ -355,13 +357,8 @@ int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
     }
     *operand++;
   }
-  char *label = malloc(strlen(operand) + 1);
+  char *label = safe_alloc(strlen(operand) + 1);
   int i;
-  if (label == NULL) {
-    MEM_ALOC_ERROR();
-    free(label);
-    return -1;
-  }
   for (i = 0; true; operand++) {
     if (isspace(*operand) || *operand == '\0') {
       label[i] = '\0';
@@ -403,11 +400,7 @@ int parse_operation(char **work_line, int line_number,
   int i;
   int word_count = 1;
   char *line = *work_line;
-  char *copy = malloc(strlen(*work_line) + 1);
-  if (copy == NULL) {
-    MEM_ALOC_ERROR();
-    return -1;
-  }
+  char *copy = safe_alloc(strlen(*work_line) + 1);
   IGNORE_WHITESPACE(line);
   for (i = 0; *line != '\0'; line++) {
     if (isspace(*line)) {
@@ -439,14 +432,8 @@ int parse_operation(char **work_line, int line_number,
     temp->operation.funct = syntax.funct;
     char *param1, *param2;
     bool relative1, relative2;
-    param1 = malloc(strlen(*work_line) + 1);
-    param2 = malloc(strlen(*work_line) + 1);
-    if (param1 == NULL || param2 == NULL) {
-      MEM_ALOC_ERROR();
-      free(param1);
-      free(param2);
-      return -1;
-    }
+    param1 = safe_alloc(strlen(*work_line) + 1);
+    param2 = safe_alloc(strlen(*work_line) + 1);
     IGNORE_WHITESPACE(line);
     for (i = 0; *line != '\0'; line++) {
       if (isspace(*line) || *line == OPERAND_SEPARATOR) {

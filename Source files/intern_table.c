@@ -1,23 +1,26 @@
-#include "../Header files/tables.h"
 #include "../Header files/errors.h"
+#include "../Header files/tables.h"
+#include <Header Files/memory_utility.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 /*
  * Purpose:
- * This file defines functions and structures for managing interned labels in the
- * assembler project, particularly focusing on code and data labels. It includes
- * functions for creating new interned labels, finding an interned label by name,
- * passing on the interns table, adding intern to an existing intern table and freeing
- * the list of interned labels.
+ * This file defines functions and structures for managing interned labels in
+ * the assembler project, particularly focusing on code and data labels. It
+ * includes functions for creating new interned labels, finding an interned
+ * label by name, passing on the interns table, adding intern to an existing
+ * intern table and freeing the list of interned labels.
  *
  * Key Structures:
- * - `Intern`: A structure to hold interned labels with a name, type (code or data),
- *   memory location, and a pointer to the next interned label in a linked list.
+ * - `Intern`: A structure to hold interned labels with a name, type (code or
+ * data), memory location, and a pointer to the next interned label in a linked
+ * list.
  *
  * Key Functions:
- * - `str_dup`: Duplicates a string by allocating memory and copying the content.
+ * - `str_dup`: Duplicates a string by allocating memory and copying the
+ * content.
  * - `new_intern`: Creates a new interned label and returns a pointer to it.
  * - `find_intern`: Searches for an interned label by name in a linked list.
  * - `free_list`: Frees the memory used by the interned labels linked list.
@@ -34,11 +37,7 @@
  */
 
 intern_node* add_intern(char* name, intern_type type, int mem_place, intern_node table) {
-  intern_node* new_intern = (intern_node*)malloc(sizeof(intern_node));  /* Allocate memory for the new interned label. */
-  if (!new_intern) {
-    MEM_ALOC_ERROR();
-    return NULL;
-}
+  intern_node* new_intern = (intern_node*)safe_alloc(sizeof(intern_node));  /* Allocate memory for the new interned label. */
   new_intern->name = strdup(name);  /* Duplicate the name of the interned label. */
   new_intern->type = type;  /* Set the type (code or data) of the interned label. */
   new_intern->mem_place = mem_place;  /* Set the memory location of the interned label. */
@@ -56,7 +55,7 @@ void add_intern_node(intern_node *node, intern_node *curr) {
 
 
 void add_new_intern(intern_table_head *head, const char *name, int mem_place,intern_type type) {
-  intern_node *node = malloc(sizeof(intern_node));
+  intern_node *node = safe_alloc(sizeof(intern_node));
   node->name = strdup(name);
   node->mem_place = mem_place;
   node->type = type;
@@ -91,7 +90,7 @@ void free_intern_list(intern_node* head) {
 }
 
 intern_table_head *initialise_intern_table() {
-  intern_table_head *root = malloc(sizeof(intern_table_head));
+  intern_table_head *root = safe_alloc(sizeof(intern_table_head));
   root->root = NULL;
   return root;
 }
