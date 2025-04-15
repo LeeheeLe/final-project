@@ -541,7 +541,7 @@ void first_pass(const char *file_name) {
   if (input == NULL) {
     FILE_OPEN_ERROR();
     free_all_memory();
-    return;
+    exit(EXIT_FAILURE);
   }
   char *line, *work_line, *intern_name;
   inst instruction_type;

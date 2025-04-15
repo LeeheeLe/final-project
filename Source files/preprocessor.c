@@ -49,11 +49,6 @@ struct Macro_table *preprocess(const char *file_name) {
     char *input_file, *output_file;
     curr_macro = head_macro;
 
-    if (curr_macro == NULL) {
-        MEM_ALOC_ERROR();
-        return NULL;
-    }
-
     head_macro->first_line = NULL;
     head_macro->macro_name = NULL;
     head_macro->next_macro = NULL;
@@ -67,7 +62,7 @@ struct Macro_table *preprocess(const char *file_name) {
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
         free_all_memory();
-        return NULL;
+        exit(EXIT_FAILURE);
     }
 
     char *line = NULL; /*pointer to a buffer for storing each line read from the file*/

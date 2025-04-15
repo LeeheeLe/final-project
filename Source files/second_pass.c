@@ -12,7 +12,7 @@ void create_ob_file(const char *file_name, const memory *code,
   if (file_ob == NULL) {
     FILE_OPEN_ERROR();
     free_all_memory();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   fprintf(file_ob, "  %d %d\n", ICF-START_ADDRESS, DCF); /* header */
@@ -36,7 +36,7 @@ void create_entry_file(const char *file_name,
   if (file_entry == NULL) {
     FILE_OPEN_ERROR();
     free_all_memory();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   entry_node *current;
@@ -67,7 +67,7 @@ void populate_labels(const char *file_name, memory *code,
   if (file_extern == NULL) {
     FILE_OPEN_ERROR();
     free_all_memory();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   intern_node *current = intern_table.root;
