@@ -1,8 +1,6 @@
 #ifndef CONST_TABLES_H
 #define CONST_TABLES_H
 
-
-
 struct operand_type {/**type of allowed operands for an operation**/
   int IMMEDIATE : 1;
   int ADDRESS : 1;

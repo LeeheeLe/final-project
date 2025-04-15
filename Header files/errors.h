@@ -1,7 +1,6 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-
 /*Memory error macros*/
 #define MEM_ALOC_ERROR() printf("Error: memory allocation error.\n")
 #define FILE_OPEN_ERROR() printf("Error: failed to open file.\n")

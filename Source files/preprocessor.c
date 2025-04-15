@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /*
  * reserved_names - A list of reserved names in the assembly language.
  *
@@ -62,7 +61,7 @@ struct Macro_table *preprocess(const char *file_name) {
     if (output == NULL || input == NULL) {
         FILE_OPEN_ERROR();
         free_all_memory();
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
     char *line = NULL; /*pointer to a buffer for storing each line read from the file*/

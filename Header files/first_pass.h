@@ -9,14 +9,9 @@
 #include <string.h>
 #include <ctype.h>
 
-
-
 #define ASSEMBLER_INPUT_EXT PREPROCESSOR_OUTPUT_EXT
 /*the input of the first pass is the output of the preprocessor*/
 
-
-
 void first_pass(const char *file_name);
-
 
 #endif // FIRST_PASS_H

@@ -15,5 +15,4 @@ void free_ptr(const void *ptr);
 
 void free_all_memory();
 
-
 #endif /*MEMORY_UTILITY_H*/
