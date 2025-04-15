@@ -36,8 +36,14 @@ $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $(SRC)
 
 run: $(TARGET)
-	cd "Valid input output ex" && ../$(TARGET) $(VALID_TEST_INPUTS)
-	cd "Invalid input output ex" && ../$(TARGET) $(INVALID_TEST_INPUTS)
+	@echo -----------------------
+	@echo testing valid inputs:
+	@echo -----------------------
+	@cd "Valid input output ex" && ../$(TARGET) $(VALID_TEST_INPUTS)
+	@echo -----------------------
+	@echo testing invalid inputs
+	@echo -----------------------
+	@cd "Invalid input output ex" && ../$(TARGET) $(INVALID_TEST_INPUTS)
 
 test: run
 
