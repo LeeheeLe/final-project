@@ -47,7 +47,7 @@
 #define NON_EXISTANT_NAME(name) printf("The operation named %s does not exist.\n", name)
 #define MISSING_OPERAND(line) printf("Error in line %d: missing operand.\n", line)
 #define FILE_EXTENSION_ERROR(file_name) printf("Error in file %d: file names entered should not include the extention.\n", file_name)
-
+#define MISSING_INTERN(name) printf("The intern named %s does not exist.\n", name)
 /*
  * Warnings
  * Used for notifying the user of non-critical issues that may indicate

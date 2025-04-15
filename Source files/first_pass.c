@@ -71,9 +71,7 @@ void write_str(memory data_image, int DC, char *str) {
  * Returns:
  *   - The number of operands extracted (1 or 0).
  */
-int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN],
-                    char **operand_label, int operand_number, enum op_type type,
-                    int *relative) {
+int extract_operand(char *operand, memory_word temp[MAX_OPERATION_LEN], char **operand_label, int operand_number, enum op_type type,int *relative) {
   char *endptr;
   char *label;
   int i;
