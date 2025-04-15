@@ -17,7 +17,8 @@ mcro FUNC_CALL
     rts
 mcroend
 
-MAIN_LABEL: DATA_INIT
+MAIN_LABEL: inc r3
+            DATA_INIT
             lea STR, r5
             JUMP_CONDITIONAL
             prn r5
