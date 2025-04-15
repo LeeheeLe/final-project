@@ -67,7 +67,7 @@ struct Macro_table *preprocess(const char *file_name) {
     char *line = NULL; /*pointer to a buffer for storing each line read from the file*/
     while ((line = getLine(input)) != NULL) {
         line_number++;
-        if ((macro_idx = is_saved_macro(line, head_macro, &ecode)) != -1) {
+        if ((macro_idx = is_saved_macro(line, head_macro)) != -1) {
             /*find index of macro in line if line is a macro*/
             print_macro_contents_to_file(macro_idx, head_macro, output);
             continue;

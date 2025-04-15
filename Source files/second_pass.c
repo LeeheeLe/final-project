@@ -50,7 +50,7 @@ void create_entry_file(const char *file_name,
       if (found_label->value == DEFAULT_EXTERN_VALUE) {
         //todo: throw error extern cannot be intern too
       }
-      fprintf(file_entry, "%s %7d\n", current->name, (found_label->type == DATA) ? found_label->value + ICF : found_label->value);
+      fprintf(file_entry, "%s %07d\n", current->name, (found_label->type == DATA) ? found_label->value + ICF : found_label->value);
     }
     current = current->next_entry;
   }

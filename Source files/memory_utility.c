@@ -1,6 +1,8 @@
 #include "../Header Files/memory_utility.h"
 #include "../Header Files/errors.h"
 
+#include <stdlib.h>
+
 static Memory_node *head = NULL;
 
 void *safe_alloc(const size_t size) {

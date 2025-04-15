@@ -3,6 +3,7 @@
 
 #include "errors.h"
 #include "file_extensions.h"
+#include "preprocessor.h"
 #include "input.h"
 #include <stdio.h>
 #include <stdlib.h>
