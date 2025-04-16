@@ -1,6 +1,9 @@
-#include <errors.h>
-#include <tables.h>
-#include <memory_utility.h>
+#include "errors.h"
+#include "tables.h"
+#include "memory_utility.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
 #include <stdio.h>
 #include <string.h>
 

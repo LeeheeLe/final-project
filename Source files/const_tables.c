@@ -4,9 +4,10 @@
  * This file defines the operation syntax table and provides a function to retrieve
  * operation details based on the operation's name.
  */
-
-#include <const_tables.h>
-#include <errors.h>
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
+#include "errors.h"
 #include <stdio.h>
 #include <string.h>
 

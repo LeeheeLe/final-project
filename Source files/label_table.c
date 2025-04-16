@@ -1,5 +1,8 @@
-#include <tables.h>
-#include <memory_utility.h>
+#include "tables.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
+#include "memory_utility.h"
 #include <string.h>
 
 /*

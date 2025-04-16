@@ -1,5 +1,9 @@
-#include <tables.h>
-#include <memory_utility.h>
+#include "tables.h"
+#include "memory_utility.h"
+#include "mem_image.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
 #include <string.h>
 
 /*

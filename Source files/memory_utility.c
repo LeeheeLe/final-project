@@ -1,5 +1,8 @@
-#include <memory_utility.h>
-#include <errors.h>
+#include "memory_utility.h"
+#include "errors.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
 #include <stdlib.h>
 
 static Memory_node *head = NULL;

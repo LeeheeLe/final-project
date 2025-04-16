@@ -3,16 +3,16 @@
  * Purpose: This file performs the first pass of an assembler program, parsing instructions and processing labels.
  * It generates the data and code images.
  */
-
-#include <first_pass.h>
-#include <preprocessor.h>
-#include <utility.h>
-#include <handle_text.h>
-#include <mem_image.h>
-#include <parsing.h>
-#include <second_pass.h>
-#include <tables.h>
-#include <memory_utility.h>
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
+#include "preprocessor.h"
+#include "utility.h"
+#include "handle_text.h"
+#include "mem_image.h"
+#include "second_pass.h"
+#include "tables.h"
+#include "memory_utility.h"
 #include <ctype.h>
 
 /*

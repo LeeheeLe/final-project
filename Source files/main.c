@@ -1,6 +1,8 @@
-#include <first_pass.h>
-#include <memory_utility.h>
-#include <preprocessor.h>
+#include "first_pass.h"
+#include "parsing.h"
+#include "const_tables.h"
+#include "memory_utility.h"
+#include "preprocessor.h"
 #include <stdio.h>
 
 /*

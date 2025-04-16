@@ -1,11 +1,12 @@
-#include <const_tables.h>
+#include "const_tables.h"
 #include <ctype.h>
-#include <first_pass.h>
-#include <mem_image.h>
-#include <parsing.h>
-#include <second_pass.h>
-#include <tables.h>
-#include <utility.h>
+#include "first_pass.h"
+#include "parsing.h"
+#include "const_tables.h"
+#include "mem_image.h"
+#include "second_pass.h"
+#include "tables.h"
+#include "utility.h"
 
 /*
  * Function: handle_numbers

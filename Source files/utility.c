@@ -1,11 +1,14 @@
-#include <first_pass.h>
-#include <preprocessor.h>
-#include <const_tables.h>
-#include <mem_image.h>
-#include <parsing.h>
-#include <second_pass.h>
-#include <tables.h>
-#include <memory_utility.h>
+#include "first_pass.h"
+#include "preprocessor.h"
+#include "const_tables.h"
+#include "mem_image.h"
+#include "parsing.h"
+#include "const_tables.h"
+#include "first_pass.h"
+#include "parsing.h"
+#include "second_pass.h"
+#include "tables.h"
+#include "memory_utility.h"
 #include <ctype.h>
 
 /**

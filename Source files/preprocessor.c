@@ -1,7 +1,10 @@
-#include <preprocessor.h>
-#include <input.h>
-#include <memory_utility.h>
-#include <file_extensions.h>
+#include "preprocessor.h"
+#include "input.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
+#include "memory_utility.h"
+#include "file_extensions.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>

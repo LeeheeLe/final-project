@@ -1,5 +1,8 @@
-#include <second_pass.h>
-#include <memory_utility.h>
+#include "second_pass.h"
+#include "memory_utility.h"
+#include "parsing.h"
+#include "first_pass.h"
+#include "const_tables.h"
 
 /*
  * create_ob_file - Generates the object file that contains both machine code and data.
