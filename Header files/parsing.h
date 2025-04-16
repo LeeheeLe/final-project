@@ -1,6 +1,7 @@
 #ifndef PARSING_H
 #define PARSING_H
 
+#include "first_pass.h"
 #include "errors.h"
 
 /*
