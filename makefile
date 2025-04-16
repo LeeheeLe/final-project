@@ -1,12 +1,16 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -ansi -pedantic -g -std=c90
-INCLUDES = -IHeader\ files
+CFLAGS = -Wall -ansi -pedantic
 
-# Source directory (escaped space for Make compatibility)
-SRC_DIR = Source\ files
+# Paths
+ROOT_DIR = .
+SRC_DIR = $(ROOT_DIR)/Source_files
+INC_DIR = $(ROOT_DIR)/Header_files
 
-# All source files
+# Include path
+INCLUDES = -I$(INC_DIR)
+
+# Source files
 SRC = \
   $(SRC_DIR)/entry_table.c \
   $(SRC_DIR)/const_tables.c \
@@ -22,30 +26,29 @@ SRC = \
   $(SRC_DIR)/utility.c \
   $(SRC_DIR)/handle_text.c
 
-# Executable
+# Object files
+OBJ = $(SRC:.c=.o)
+
+# Target executable
 TARGET = final_project
 
-# Test files (passed as args to main)
-VALID_TEST_INPUTS = example1 example2 example3 example4 example5 ps test
-INVALID_TEST_INPUTS = invalid_example1 invalid_example2 invalid_example3 invalid_example4 invalid_example5
-.PHONY: all run test clean
-
+# Default rule
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $(SRC)
+# Link the executable
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
+# Compile .c to .o
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(wildcard $(INC_DIR)/*.h)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Run
 run: $(TARGET)
-	@echo -----------------------
-	@echo testing valid inputs:
-	@echo -----------------------
-	@cd "Valid input output ex" && ../$(TARGET) $(VALID_TEST_INPUTS)
-	@echo -----------------------
-	@echo testing invalid inputs
-	@echo -----------------------
-	@cd "Invalid input output ex" && ../$(TARGET) $(INVALID_TEST_INPUTS)
+	./$(TARGET)
 
-test: run
-
+# Clean
 clean:
-	rm -f $(TARGET)
+	rm -f $(SRC_DIR)/*.o $(TARGET)
+
+.PHONY: all run clean
